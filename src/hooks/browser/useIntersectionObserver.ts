@@ -39,10 +39,12 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
     }
 
     const observer = new IntersectionObserver(([entry]) => {
-      setEntry(entry);
+      if (entry) {
+        setEntry(entry);
 
-      if (options.freezeOnceVisible && entry.isIntersecting) {
-        observer.disconnect();
+        if (options.freezeOnceVisible && entry.isIntersecting) {
+          observer.disconnect();
+        }
       }
     }, options);
 

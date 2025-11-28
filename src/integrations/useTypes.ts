@@ -1,0 +1,113 @@
+/**
+ * React Types Integration Hook
+ * Provides React hooks for @kitiumai/types 2.0 integration
+ */
+
+import { useState, useCallback, useMemo } from 'react';
+import type { IsoDateTimeString } from '@kitiumai/types/primitives';
+
+/**
+ * Hook to manage branded IDs with type safety
+ */
+export function useBrandedId<B extends string>(
+  initialId?: string,
+  _brand?: B
+): readonly [string | undefined, (newId: string) => void] {
+  const [id, setId] = useState<string | undefined>(initialId);
+
+  const updateId = useCallback((newId: string) => {
+    setId(newId);
+  }, []);
+
+  return [id, updateId] as const;
+}
+
+/**
+ * Hook to format and manage ISO datetime strings
+ */
+export function useIsoDateTime(
+  initialDate?: Date
+): readonly [
+  IsoDateTimeString | undefined,
+  (date: Date) => void,
+  () => void,
+] {
+  const [isoString, setIsoString] = useState<IsoDateTimeString | undefined>(
+    initialDate ? (initialDate.toISOString() as IsoDateTimeString) : undefined
+  );
+
+  const updateDate = useCallback((date: Date) => {
+    setIsoString(date.toISOString() as IsoDateTimeString);
+  }, []);
+
+  const setNow = useCallback(() => {
+    setIsoString(new Date().toISOString() as IsoDateTimeString);
+  }, []);
+
+  return [isoString, updateDate, setNow] as const;
+}
+
+/**
+ * Hook to validate email addresses
+ */
+export function useEmailValidator(): (email: string) => boolean {
+  return useCallback((email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }, []);
+}
+
+/**
+ * Hook to manage validated email state
+ */
+export function useValidatedEmail(
+  initialEmail = ''
+): readonly [
+  email: string,
+  setEmail: (email: string) => void,
+  isValid: boolean,
+  error: string | null,
+] {
+  const [email, setEmail] = useState(initialEmail);
+  const validateEmail = useEmailValidator();
+
+  const isValid = useMemo(() => {
+    if (!email) {
+      return false;
+    }
+    return validateEmail(email);
+  }, [email, validateEmail]);
+
+  const error = useMemo(() => {
+    if (!email) {
+      return null;
+    }
+    return isValid ? null : 'Invalid email address';
+  }, [email, isValid]);
+
+  return [email, setEmail, isValid, error] as const;
+}
+
+/**
+ * Hook for type-safe form state management
+ */
+export function useTypedFormState<T extends Record<string, unknown>>(
+  initialState: T
+): readonly [
+  state: T,
+  updateField: <K extends keyof T>(field: K, value: T[K]) => void,
+  resetForm: () => void,
+] {
+  const [state, setState] = useState<T>(initialState);
+
+  const updateField = useCallback(<K extends keyof T>(field: K, value: T[K]) => {
+    setState((prev) => ({ ...prev, [field]: value }));
+  }, []);
+
+  const resetForm = useCallback(() => {
+    setState(initialState);
+  }, [initialState]);
+
+  return [state, updateField, resetForm] as const;
+}
+

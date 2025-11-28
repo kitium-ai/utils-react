@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 /**
  * Hook that returns the value or a default if value is null/undefined
  *
