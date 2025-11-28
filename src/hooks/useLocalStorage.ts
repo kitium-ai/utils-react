@@ -19,6 +19,11 @@ type SetValue<T> = (value: T | ((val: T) => T)) => void;
  *   </button>;
  * };
  * ```
+ *
+ * @remarks
+ * SSR-safe: This hook safely handles server-side rendering by checking for window availability.
+ * In SSR environments, it returns the initialValue and skips localStorage operations.
+ * Storage events are also safely handled with proper environment checks.
  */
 export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
   // Get initial value from localStorage or use initialValue
@@ -59,6 +64,10 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
 
   // Listen for changes in other tabs/windows
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue) {
         try {
