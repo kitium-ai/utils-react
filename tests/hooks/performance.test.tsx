@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useThrottle, useThrottleCallback } from '../../src/hooks/performance/index.js';
 import { useDebounce, useDebounceCallback } from '../../src/hooks/index.js';
 
