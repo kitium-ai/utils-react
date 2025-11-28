@@ -12,6 +12,14 @@ describe('async hooks', () => {
   });
 
   describe('useAsync', () => {
+    beforeEach(() => {
+      vi.useRealTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('should handle async function', async () => {
       const asyncFn = vi.fn().mockResolvedValue('result');
       const { result } = renderHook(() => useAsync(asyncFn));
