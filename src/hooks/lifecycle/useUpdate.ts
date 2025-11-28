@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { flushSync } from 'react-dom';
 
 /**
  * Hook that returns a function to force a re-render
@@ -17,7 +18,9 @@ export function useUpdate(): () => void {
   const [, setState] = useState({});
 
   return useCallback(() => {
-    setState({});
+    flushSync(() => {
+      setState({});
+    });
   }, []);
 }
 

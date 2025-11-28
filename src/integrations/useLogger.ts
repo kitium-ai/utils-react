@@ -95,21 +95,25 @@ export function usePerformanceLogger(
   operationName: string
 ): (operation: () => void) => void {
   const logger = useLogger('performance');
+  const getNow =
+    typeof performance !== 'undefined' && typeof performance.now === 'function'
+      ? () => performance.now()
+      : () => Date.now();
 
   return useMemo(
     () => (operation: () => void) => {
-      const start = performance.now();
+      const start = getNow();
       try {
         operation();
       } finally {
-        const duration = performance.now() - start;
+        const duration = getNow() - start;
         logger.debug(`Performance: ${operationName}`, {
           duration,
           unit: 'ms',
         });
       }
     },
-    [logger, operationName]
+    [getNow, logger, operationName]
   );
 }
 

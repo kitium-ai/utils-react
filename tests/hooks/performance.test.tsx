@@ -12,6 +12,14 @@ describe('performance hooks', () => {
   });
 
   describe('useThrottle', () => {
+    beforeEach(() => {
+      vi.useRealTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('should throttle value changes', async () => {
       const { result, rerender } = renderHook(
         ({ value }) => useThrottle(value, 500),
@@ -23,10 +31,12 @@ describe('performance hooks', () => {
       rerender({ value: 2 });
       expect(result.current).toBe(1); // Not updated yet
 
-      vi.advanceTimersByTime(500);
-      await waitFor(() => {
-        expect(result.current).toBe(2);
-      });
+      await waitFor(
+        () => {
+          expect(result.current).toBe(2);
+        },
+        { timeout: 1000 }
+      );
     });
   });
 
@@ -46,4 +56,3 @@ describe('performance hooks', () => {
     });
   });
 });
-
