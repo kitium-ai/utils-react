@@ -94,6 +94,7 @@
     "@kitiumai/lint": "^2.0.0",
     "@kitiumai/scripts": "^1.0.0",
     "@kitiumai/vitest-helpers": "^2.0.0",
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.0.0",
     "@testing-library/react-hooks": "^8.0.1",
@@ -114,7 +115,7 @@
     "vitest": "^2.0.0"
   },
   "dependencies": {
-    "@kitiumai/types": "^2.0.0",
-    "@kitiumai/logger": "^2.0.0"
+    "@kitiumai/logger": "^2.0.0",
+    "@kitiumai/types": "^2.0.0"
   }
 }

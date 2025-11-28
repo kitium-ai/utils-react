@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { isBrowser, isDOMAvailable } from '../../utils/ssr';
 
 /**
  * Hook that locks body scroll
@@ -12,10 +13,15 @@ import { useEffect } from 'react';
  *   return isOpen ? <div>Modal Content</div> : null;
  * };
  * ```
+ *
+ * @remarks
+ * SSR-safe: This hook checks for browser and DOM availability before attempting
+ * to manipulate the document body. In server-side rendering environments, the hook
+ * will safely return without errors.
  */
 export function useLockBodyScroll(lock = true): void {
   useEffect(() => {
-    if (!lock) {
+    if (!lock || !isBrowser() || !isDOMAvailable()) {
       return;
     }
 
