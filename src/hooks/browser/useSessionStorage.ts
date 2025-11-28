@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-type SetValue<T> = (value: T | ((val: T) => T)) => void;
+type SetValue<T> = (value: T | ((value_: T) => T)) => void;
 
 /**
  * Hook that syncs state with sessionStorage
@@ -18,10 +18,7 @@ type SetValue<T> = (value: T | ((val: T) => T)) => void;
  * };
  * ```
  */
-export function useSessionStorage<T>(
-  key: string,
-  initialValue: T
-): [T, SetValue<T>] {
+export function useSessionStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === 'undefined') {
       return initialValue;
@@ -39,8 +36,7 @@ export function useSessionStorage<T>(
   const setValue: SetValue<T> = useCallback(
     (value) => {
       try {
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+        const valueToStore = value instanceof Function ? value(storedValue) : value;
 
         setStoredValue(valueToStore);
 
@@ -60,10 +56,7 @@ export function useSessionStorage<T>(
         try {
           setStoredValue(JSON.parse(e.newValue));
         } catch (error) {
-          console.warn(
-            `Error parsing storage event for key "${key}":`,
-            error
-          );
+          console.warn(`Error parsing storage event for key "${key}":`, error);
         }
       }
     };
@@ -74,4 +67,3 @@ export function useSessionStorage<T>(
 
   return [storedValue, setValue];
 }
-

@@ -1,5 +1,5 @@
+import type { DependencyList,EffectCallback } from 'react';
 import { useEffect, useRef } from 'react';
-import type { EffectCallback, DependencyList } from 'react';
 
 /**
  * Hook that runs an effect but skips the first render
@@ -17,10 +17,7 @@ import type { EffectCallback, DependencyList } from 'react';
  * };
  * ```
  */
-export function useUpdateEffect(
-  effect: EffectCallback,
-  deps?: DependencyList
-): void {
+export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList): void {
   const isFirst = useRef(true);
 
   useEffect(() => {
@@ -31,4 +28,3 @@ export function useUpdateEffect(
     return effect();
   }, deps);
 }
-

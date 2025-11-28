@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { isDOMAvailable } from '../../utils/ssr';
 
 /**
@@ -32,4 +33,3 @@ export function useTitle(title: string): void {
     };
   }, [title]);
 }
-

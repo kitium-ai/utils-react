@@ -29,28 +29,24 @@ import { useCallback, useState } from 'react';
 export function useList<T>(initialList: T[] = []) {
   const [list, setList] = useState<T[]>(initialList);
 
-  const set = useCallback((newList: T[] | ((prev: T[]) => T[])) => {
+  const set = useCallback((newList: T[] | ((previous: T[]) => T[])) => {
     setList(newList);
   }, []);
 
   const push = useCallback((item: T) => {
-    setList((prev) => [...prev, item]);
+    setList((previous) => [...previous, item]);
   }, []);
 
   const removeAt = useCallback((index: number) => {
-    setList((prev) => prev.filter((_, i) => i !== index));
+    setList((previous) => previous.filter((_, index_) => index_ !== index));
   }, []);
 
   const insertAt = useCallback((index: number, item: T) => {
-    setList((prev) => [
-      ...prev.slice(0, index),
-      item,
-      ...prev.slice(index),
-    ]);
+    setList((previous) => [...previous.slice(0, index), item, ...previous.slice(index)]);
   }, []);
 
   const updateAt = useCallback((index: number, item: T) => {
-    setList((prev) => prev.map((el, i) => (i === index ? item : el)));
+    setList((previous) => previous.map((element, index_) => (index_ === index ? item : element)));
   }, []);
 
   const clear = useCallback(() => {
@@ -74,4 +70,3 @@ export function useList<T>(initialList: T[] = []) {
     },
   ] as const;
 }
-

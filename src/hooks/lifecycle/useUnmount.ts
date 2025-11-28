@@ -15,14 +15,13 @@ import { useEffect, useRef } from 'react';
  * };
  * ```
  */
-export function useUnmount(fn: () => void): void {
-  const fnRef = useRef(fn);
-  fnRef.current = fn;
+export function useUnmount(function_: () => void): void {
+  const functionReference = useRef(function_);
+  functionReference.current = function_;
 
   useEffect(() => {
     return () => {
-      fnRef.current();
+      functionReference.current();
     };
   }, []);
 }
-

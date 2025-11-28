@@ -35,4 +35,3 @@ export function useKeyPress(
     return () => window.removeEventListener(eventType, handleKeyPress);
   }, [targetKey, handler, eventType]);
 }
-

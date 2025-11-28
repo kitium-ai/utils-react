@@ -22,17 +22,16 @@ import { useEffect, useRef, useState } from 'react';
  * ```
  */
 export function useMountedState(): () => boolean {
-  const mountedRef = useRef(false);
+  const mountedReference = useRef(false);
   const [, setState] = useState(false);
 
   useEffect(() => {
-    mountedRef.current = true;
+    mountedReference.current = true;
     setState(true);
     return () => {
-      mountedRef.current = false;
+      mountedReference.current = false;
     };
   }, []);
 
-  return () => mountedRef.current;
+  return () => mountedReference.current;
 }
-

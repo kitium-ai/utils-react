@@ -31,16 +31,12 @@ export function useSetState<T extends Record<string, unknown>>(
 ): [T, (updates: Partial<T> | ((state: T) => Partial<T>)) => void] {
   const [state, setState] = useState(initialState);
 
-  const setMergeState = useCallback(
-    (updates: Partial<T> | ((state: T) => Partial<T>)) => {
-      setState((prev) => ({
-        ...prev,
-        ...(typeof updates === 'function' ? updates(prev) : updates),
-      }));
-    },
-    []
-  );
+  const setMergeState = useCallback((updates: Partial<T> | ((state: T) => Partial<T>)) => {
+    setState((previous) => ({
+      ...previous,
+      ...(typeof updates === 'function' ? updates(previous) : updates),
+    }));
+  }, []);
 
   return [state, setMergeState];
 }
-

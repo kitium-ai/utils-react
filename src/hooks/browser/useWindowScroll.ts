@@ -50,4 +50,3 @@ export function useWindowScroll(): ScrollPosition {
 
   return position;
 }
-

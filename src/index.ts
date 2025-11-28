@@ -1,5 +1,5 @@
 /**
- * @kitiumai/utils-react  
+ * @kitiumai/utils-react
  * Comprehensive React utilities and custom hooks for KitiumAI projects
  *
  * Integrated with @kitiumai packages v2.0:

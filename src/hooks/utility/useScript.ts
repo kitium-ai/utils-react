@@ -27,7 +27,7 @@ export interface ScriptState {
  * ```
  */
 export function useScript(
-  src: string,
+  source: string,
   options: { async?: boolean; defer?: boolean } = {}
 ): ScriptState {
   const [state, setState] = useState<ScriptState>({
@@ -37,12 +37,12 @@ export function useScript(
   });
 
   useEffect(() => {
-    if (!src) {
+    if (!source) {
       return;
     }
 
     const script = document.createElement('script');
-    script.src = src;
+    script.src = source;
     script.async = options.async ?? true;
     script.defer = options.defer ?? false;
 
@@ -53,7 +53,7 @@ export function useScript(
     const handleError = () => {
       setState({
         loading: false,
-        error: new Error(`Failed to load script: ${src}`),
+        error: new Error(`Failed to load script: ${source}`),
         ready: false,
       });
     };
@@ -68,8 +68,7 @@ export function useScript(
       script.removeEventListener('error', handleError);
       document.body.removeChild(script);
     };
-  }, [src, options.async, options.defer]);
+  }, [source, options.async, options.defer]);
 
   return state;
 }
-

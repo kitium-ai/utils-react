@@ -1,5 +1,5 @@
+import type { DependencyList,EffectCallback } from 'react';
 import { useEffect, useLayoutEffect } from 'react';
-import type { EffectCallback, DependencyList } from 'react';
 
 /**
  * SSR-safe version of useLayoutEffect
@@ -17,14 +17,10 @@ import type { EffectCallback, DependencyList } from 'react';
  * };
  * ```
  */
-export function useIsomorphicLayoutEffect(
-  effect: EffectCallback,
-  deps?: DependencyList
-): void {
+export function useIsomorphicLayoutEffect(effect: EffectCallback, deps?: DependencyList): void {
   if (typeof window === 'undefined') {
     useEffect(effect, deps);
   } else {
     useLayoutEffect(effect, deps);
   }
 }
-

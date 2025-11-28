@@ -17,4 +17,3 @@
 export function useDefault<T>(value: T | null | undefined, defaultValue: T): T {
   return value ?? defaultValue;
 }
-

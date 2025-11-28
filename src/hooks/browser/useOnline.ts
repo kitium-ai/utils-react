@@ -40,4 +40,3 @@ export function useOnline(): boolean {
 
   return isOnline;
 }
-

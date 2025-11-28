@@ -1,6 +1,6 @@
+import type { DependencyList } from 'react';
 import { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
-import type { DependencyList } from 'react';
 
 /**
  * Async state
@@ -34,7 +34,7 @@ export interface AsyncState<T> {
  * ```
  */
 export function useAsync<T>(
-  asyncFn: () => Promise<T>,
+  asyncFunction: () => Promise<T>,
   deps: DependencyList = []
 ): AsyncState<T> {
   const [state, setState] = useState<AsyncState<T>>({
@@ -50,7 +50,7 @@ export function useAsync<T>(
       setState({ loading: true, error: null, value: null });
     });
 
-    asyncFn()
+    asyncFunction()
       .then((value) => {
         if (!cancelled) {
           flushSync(() => {
@@ -73,9 +73,8 @@ export function useAsync<T>(
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, deps);
 
   return state;
 }
-

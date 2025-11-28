@@ -33,4 +33,3 @@ export function useModal(initialOpen = false) {
 
   return [isOpen, { open, close, toggle }] as const;
 }
-

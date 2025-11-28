@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { isBrowser, isDOMAvailable } from '../../utils/ssr';
 
 /**
@@ -33,4 +34,3 @@ export function useLockBodyScroll(lock = true): void {
     };
   }, [lock]);
 }
-

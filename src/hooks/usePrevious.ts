@@ -17,11 +17,11 @@ import { useEffect, useRef } from 'react';
  * ```
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
+  const reference = useRef<T>();
 
   useEffect(() => {
-    ref.current = value;
+    reference.current = value;
   }, [value]);
 
-  return ref.current;
+  return reference.current;
 }

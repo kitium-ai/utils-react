@@ -3,8 +3,8 @@
  * Provides React hooks for @kitiumai/types 2.0 integration
  */
 
-import { useState, useCallback, useMemo } from 'react';
 import type { IsoDateTimeString } from '@kitiumai/types/primitives';
+import { useCallback, useMemo,useState } from 'react';
 
 /**
  * Hook to manage branded IDs with type safety
@@ -27,11 +27,7 @@ export function useBrandedId<B extends string>(
  */
 export function useIsoDateTime(
   initialDate?: Date
-): readonly [
-  IsoDateTimeString | undefined,
-  (date: Date) => void,
-  () => void,
-] {
+): readonly [IsoDateTimeString | undefined, (date: Date) => void, () => void] {
   const [isoString, setIsoString] = useState<IsoDateTimeString | undefined>(
     initialDate ? (initialDate.toISOString() as IsoDateTimeString) : undefined
   );
@@ -101,7 +97,7 @@ export function useTypedFormState<T extends Record<string, unknown>>(
   const [state, setState] = useState<T>(initialState);
 
   const updateField = useCallback(<K extends keyof T>(field: K, value: T[K]) => {
-    setState((prev) => ({ ...prev, [field]: value }));
+    setState((previous) => ({ ...previous, [field]: value }));
   }, []);
 
   const resetForm = useCallback(() => {
@@ -110,4 +106,3 @@ export function useTypedFormState<T extends Record<string, unknown>>(
 
   return [state, updateField, resetForm] as const;
 }
-

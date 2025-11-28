@@ -42,4 +42,3 @@ export function useThrottle<T>(value: T, delay = 500): T {
 
   return throttledValue;
 }
-

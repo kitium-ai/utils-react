@@ -38,4 +38,3 @@ export function useVisibility(): boolean {
 
   return isVisible;
 }
-

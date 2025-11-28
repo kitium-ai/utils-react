@@ -3,8 +3,8 @@
  * Provides React hooks for @kitiumai/logger 2.0 integration
  */
 
-import { useEffect, useRef, useMemo } from 'react';
 import { createLogger, getLogger, type ILogger } from '@kitiumai/logger';
+import { useEffect, useMemo, useRef } from 'react';
 
 /**
  * React hook to get or create a logger instance
@@ -32,11 +32,11 @@ export function useComponentLogger(componentName: string): {
   logError: (error: Error, errorInfo?: Record<string, unknown>) => void;
 } {
   const logger = useLogger(componentName);
-  const mountTimeRef = useRef<number>(Date.now());
-  const renderCountRef = useRef<number>(0);
+  const mountTimeReference = useRef<number>(Date.now());
+  const renderCountReference = useRef<number>(0);
 
   useEffect(() => {
-    renderCountRef.current += 1;
+    renderCountReference.current += 1;
   });
 
   return useMemo(
@@ -48,16 +48,16 @@ export function useComponentLogger(componentName: string): {
       },
 
       logUnmount: () => {
-        const lifetime = Date.now() - mountTimeRef.current;
+        const lifetime = Date.now() - mountTimeReference.current;
         logger.debug(`${componentName} unmounted`, {
           lifetime,
-          renderCount: renderCountRef.current,
+          renderCount: renderCountReference.current,
         });
       },
 
       logUpdate: (props?: Record<string, unknown>) => {
         logger.debug(`${componentName} updated`, {
-          renderCount: renderCountRef.current,
+          renderCount: renderCountReference.current,
           props,
         });
       },
@@ -91,9 +91,7 @@ export function useLifecycleLogger(componentName: string): void {
 /**
  * Hook to log performance metrics
  */
-export function usePerformanceLogger(
-  operationName: string
-): (operation: () => void) => void {
+export function usePerformanceLogger(operationName: string): (operation: () => void) => void {
   const logger = useLogger('performance');
   const getNow =
     typeof performance !== 'undefined' && typeof performance.now === 'function'
@@ -116,4 +114,3 @@ export function usePerformanceLogger(
     [getNow, logger, operationName]
   );
 }
-

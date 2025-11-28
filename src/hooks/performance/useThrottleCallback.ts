@@ -70,7 +70,7 @@ export function useThrottleCallback<T extends (...args: unknown[]) => unknown>(
   options: ThrottleOptions | number = 500
 ): ThrottledFunction<T> {
   // Normalize options
-  const opts: Required<ThrottleOptions> =
+  const options_: Required<ThrottleOptions> =
     typeof options === 'number'
       ? { delay: options, leading: true, trailing: true }
       : {
@@ -79,31 +79,31 @@ export function useThrottleCallback<T extends (...args: unknown[]) => unknown>(
           trailing: options.trailing ?? true,
         };
 
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastRunRef = useRef<number>(0);
-  const callbackRef = useRef(callback);
-  const pendingArgsRef = useRef<Parameters<T> | null>(null);
+  const timeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastRunReference = useRef<number>(0);
+  const callbackReference = useRef(callback);
+  const pendingArgumentsReference = useRef<Parameters<T> | null>(null);
 
   useEffect(() => {
-    callbackRef.current = callback;
+    callbackReference.current = callback;
   }, [callback]);
 
   const invokeFunction = useCallback((args: Parameters<T>) => {
-    callbackRef.current(...args);
-    lastRunRef.current = Date.now();
-    pendingArgsRef.current = null;
+    callbackReference.current(...args);
+    lastRunReference.current = Date.now();
+    pendingArgumentsReference.current = null;
   }, []);
 
   const cancel = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+    if (timeoutReference.current) {
+      clearTimeout(timeoutReference.current);
+      timeoutReference.current = null;
     }
-    pendingArgsRef.current = null;
+    pendingArgumentsReference.current = null;
   }, []);
 
   const flush = useCallback(() => {
-    const args = pendingArgsRef.current;
+    const args = pendingArgumentsReference.current;
     if (args) {
       cancel();
       invokeFunction(args);
@@ -111,47 +111,47 @@ export function useThrottleCallback<T extends (...args: unknown[]) => unknown>(
   }, [cancel, invokeFunction]);
 
   const isPending = useCallback(() => {
-    return pendingArgsRef.current !== null;
+    return pendingArgumentsReference.current !== null;
   }, []);
 
   const throttledCallback = useCallback(
     (...args: Parameters<T>) => {
       const now = Date.now();
-      const timeSinceLastRun = now - lastRunRef.current;
+      const timeSinceLastRun = now - lastRunReference.current;
 
-      pendingArgsRef.current = args;
+      pendingArgumentsReference.current = args;
 
       // Leading edge invocation
-      if (timeSinceLastRun >= opts.delay) {
-        if (opts.leading) {
+      if (timeSinceLastRun >= options_.delay) {
+        if (options_.leading) {
           invokeFunction(args);
-        } else if (opts.trailing) {
+        } else if (options_.trailing) {
           // If leading is disabled but trailing is enabled, schedule for later
-          timeoutRef.current = setTimeout(() => {
-            if (pendingArgsRef.current) {
-              invokeFunction(pendingArgsRef.current);
+          timeoutReference.current = setTimeout(() => {
+            if (pendingArgumentsReference.current) {
+              invokeFunction(pendingArgumentsReference.current);
             }
-            timeoutRef.current = null;
-          }, opts.delay);
+            timeoutReference.current = null;
+          }, options_.delay);
         }
         return;
       }
 
       // Trailing edge invocation
-      if (opts.trailing) {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
+      if (options_.trailing) {
+        if (timeoutReference.current) {
+          clearTimeout(timeoutReference.current);
         }
 
-        timeoutRef.current = setTimeout(() => {
-          if (pendingArgsRef.current) {
-            invokeFunction(pendingArgsRef.current);
+        timeoutReference.current = setTimeout(() => {
+          if (pendingArgumentsReference.current) {
+            invokeFunction(pendingArgumentsReference.current);
           }
-          timeoutRef.current = null;
-        }, opts.delay - timeSinceLastRun);
+          timeoutReference.current = null;
+        }, options_.delay - timeSinceLastRun);
       }
     },
-    [opts.delay, opts.leading, opts.trailing, invokeFunction]
+    [options_.delay, options_.leading, options_.trailing, invokeFunction]
   );
 
   // Cleanup on unmount
@@ -169,4 +169,3 @@ export function useThrottleCallback<T extends (...args: unknown[]) => unknown>(
 
   return enhancedCallback;
 }
-

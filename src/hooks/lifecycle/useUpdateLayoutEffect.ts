@@ -1,5 +1,5 @@
+import type { DependencyList,EffectCallback } from 'react';
 import { useLayoutEffect, useRef } from 'react';
-import type { EffectCallback, DependencyList } from 'react';
 
 /**
  * Hook that runs a layout effect but skips the first render
@@ -17,10 +17,7 @@ import type { EffectCallback, DependencyList } from 'react';
  * };
  * ```
  */
-export function useUpdateLayoutEffect(
-  effect: EffectCallback,
-  deps?: DependencyList
-): void {
+export function useUpdateLayoutEffect(effect: EffectCallback, deps?: DependencyList): void {
   const isFirst = useRef(true);
 
   useLayoutEffect(() => {
@@ -31,4 +28,3 @@ export function useUpdateLayoutEffect(
     return effect();
   }, deps);
 }
-

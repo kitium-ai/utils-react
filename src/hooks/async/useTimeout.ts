@@ -15,10 +15,7 @@ import { useEffect, useRef } from 'react';
  * };
  * ```
  */
-export function useTimeout(
-  callback: () => void,
-  delay: number | null
-): void {
+export function useTimeout(callback: () => void, delay: number | null): void {
   const savedCallback = useRef(callback);
 
   useEffect(() => {
@@ -37,4 +34,3 @@ export function useTimeout(
     return () => clearTimeout(id);
   }, [delay]);
 }
-

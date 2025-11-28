@@ -26,12 +26,12 @@ export interface ElementSize {
  * ```
  */
 export function useElementSize<T extends HTMLElement = HTMLElement>(
-  ref: RefObject<T>
+  reference: RefObject<T>
 ): ElementSize {
   const [size, setSize] = useState<ElementSize>({ width: 0, height: 0 });
 
   useEffect(() => {
-    const element = ref.current;
+    const element = reference.current;
     if (!element) {
       return;
     }
@@ -50,8 +50,7 @@ export function useElementSize<T extends HTMLElement = HTMLElement>(
     return () => {
       resizeObserver.disconnect();
     };
-  }, [ref]);
+  }, [reference]);
 
   return size;
 }
-

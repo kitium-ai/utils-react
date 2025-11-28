@@ -38,4 +38,3 @@ export function useMouse(): MousePosition {
 
   return position;
 }
-

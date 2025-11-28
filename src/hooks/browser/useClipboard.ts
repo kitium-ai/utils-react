@@ -50,4 +50,3 @@ export function useClipboard(initialValue = '') {
 
   return [value, { copy, reset }] as const;
 }
-

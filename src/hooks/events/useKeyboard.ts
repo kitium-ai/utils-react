@@ -33,12 +33,7 @@ export function useKeyboard(
   const { target = 'window', event: eventType = 'keydown' } = options;
 
   useEffect(() => {
-    const targetElement =
-      target === 'window'
-        ? window
-        : target === 'document'
-          ? document
-          : target;
+    const targetElement = target === 'window' ? window : target === 'document' ? document : target;
 
     const handleKeyboard = (e: Event) => {
       handler(e as KeyboardEvent);
@@ -51,4 +46,3 @@ export function useKeyboard(
     };
   }, [handler, target, eventType]);
 }
-

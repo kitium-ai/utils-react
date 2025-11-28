@@ -1,4 +1,4 @@
-import { useCallback, useState, ChangeEvent } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 
 /**
  * Hook for managing checkbox state
@@ -19,7 +19,7 @@ export function useCheckbox(
 ): [
   boolean,
   (e: ChangeEvent<HTMLInputElement>) => void,
-  { setChecked: (checked: boolean) => void; toggle: () => void }
+  { setChecked: (checked: boolean) => void; toggle: () => void },
 ] {
   const [checked, setChecked] = useState(initialChecked);
 
@@ -33,4 +33,3 @@ export function useCheckbox(
 
   return [checked, onChange, { setChecked, toggle }];
 }
-

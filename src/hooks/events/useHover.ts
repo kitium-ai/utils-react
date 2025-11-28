@@ -19,15 +19,12 @@ import type { RefObject } from 'react';
  * };
  * ```
  */
-export function useHover<T extends HTMLElement = HTMLElement>(): [
-  RefObject<T>,
-  boolean
-] {
+export function useHover<T extends HTMLElement = HTMLElement>(): [RefObject<T>, boolean] {
   const [isHovered, setIsHovered] = useState(false);
-  const ref = useRef<T>(null);
+  const reference = useRef<T>(null);
 
   useEffect(() => {
-    const element = ref.current;
+    const element = reference.current;
     if (!element) {
       return;
     }
@@ -44,6 +41,5 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [
     };
   }, []);
 
-  return [ref, isHovered];
+  return [reference, isHovered];
 }
-

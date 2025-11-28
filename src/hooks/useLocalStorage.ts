@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-type SetValue<T> = (value: T | ((val: T) => T)) => void;
+type SetValue<T> = (value: T | ((value_: T) => T)) => void;
 
 /**
  * Hook that syncs state with localStorage

@@ -30,4 +30,3 @@ export function useBoolean(initialValue = false) {
 
   return [value, { setTrue, setFalse, toggle }] as const;
 }
-

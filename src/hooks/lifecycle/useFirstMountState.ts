@@ -23,4 +23,3 @@ export function useFirstMountState(): boolean {
 
   return false;
 }
-

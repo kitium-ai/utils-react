@@ -71,7 +71,7 @@ export function useDebounceCallback<T extends (...args: unknown[]) => unknown>(
   options: DebounceOptions | number = 500
 ): DebouncedFunction<T> {
   // Normalize options
-  const opts: Required<DebounceOptions> =
+  const options_: Required<DebounceOptions> =
     typeof options === 'number'
       ? { delay: options, leading: false, maxWait: Infinity }
       : {
@@ -80,49 +80,49 @@ export function useDebounceCallback<T extends (...args: unknown[]) => unknown>(
           maxWait: options.maxWait ?? Infinity,
         };
 
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const maxWaitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const callbackRef = useRef(callback);
-  const lastCallTimeRef = useRef<number>(0);
-  const lastInvokeTimeRef = useRef<number>(0);
-  const pendingArgsRef = useRef<Parameters<T> | null>(null);
+  const timeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const maxWaitTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const callbackReference = useRef(callback);
+  const lastCallTimeReference = useRef<number>(0);
+  const lastInvokeTimeReference = useRef<number>(0);
+  const pendingArgumentsReference = useRef<Parameters<T> | null>(null);
 
   useEffect(() => {
-    callbackRef.current = callback;
+    callbackReference.current = callback;
   }, [callback]);
 
   const invokeFunction = useCallback(() => {
-    const args = pendingArgsRef.current;
+    const args = pendingArgumentsReference.current;
     if (args) {
-      callbackRef.current(...args);
-      lastInvokeTimeRef.current = Date.now();
-      pendingArgsRef.current = null;
+      callbackReference.current(...args);
+      lastInvokeTimeReference.current = Date.now();
+      pendingArgumentsReference.current = null;
     }
   }, []);
 
   const cancel = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+    if (timeoutReference.current) {
+      clearTimeout(timeoutReference.current);
+      timeoutReference.current = null;
     }
-    if (maxWaitTimeoutRef.current) {
-      clearTimeout(maxWaitTimeoutRef.current);
-      maxWaitTimeoutRef.current = null;
+    if (maxWaitTimeoutReference.current) {
+      clearTimeout(maxWaitTimeoutReference.current);
+      maxWaitTimeoutReference.current = null;
     }
-    pendingArgsRef.current = null;
-    lastCallTimeRef.current = 0;
+    pendingArgumentsReference.current = null;
+    lastCallTimeReference.current = 0;
   }, []);
 
   const flush = useCallback(() => {
-    if (pendingArgsRef.current) {
+    if (pendingArgumentsReference.current) {
       // Clear timers first
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
+        timeoutReference.current = null;
       }
-      if (maxWaitTimeoutRef.current) {
-        clearTimeout(maxWaitTimeoutRef.current);
-        maxWaitTimeoutRef.current = null;
+      if (maxWaitTimeoutReference.current) {
+        clearTimeout(maxWaitTimeoutReference.current);
+        maxWaitTimeoutReference.current = null;
       }
       // Invoke with pending args
       invokeFunction();
@@ -130,45 +130,45 @@ export function useDebounceCallback<T extends (...args: unknown[]) => unknown>(
   }, [invokeFunction]);
 
   const isPending = useCallback(() => {
-    return pendingArgsRef.current !== null;
+    return pendingArgumentsReference.current !== null;
   }, []);
 
   const debouncedCallback = useCallback(
     (...args: Parameters<T>) => {
       const now = Date.now();
-      const isInvoking = opts.leading && !timeoutRef.current;
+      const isInvoking = options_.leading && !timeoutReference.current;
 
-      lastCallTimeRef.current = now;
-      pendingArgsRef.current = args;
+      lastCallTimeReference.current = now;
+      pendingArgumentsReference.current = args;
 
       // Clear existing timeouts
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
       }
 
       // Invoke immediately on leading edge
       if (isInvoking) {
         invokeFunction();
-        pendingArgsRef.current = null;
+        pendingArgumentsReference.current = null;
       }
 
       // Set up trailing edge timeout
-      timeoutRef.current = setTimeout(() => {
-        timeoutRef.current = null;
-        if (!opts.leading || pendingArgsRef.current) {
+      timeoutReference.current = setTimeout(() => {
+        timeoutReference.current = null;
+        if (!options_.leading || pendingArgumentsReference.current) {
           invokeFunction();
         }
-      }, opts.delay);
+      }, options_.delay);
 
       // Set up max wait timeout if specified
-      if (opts.maxWait < Infinity && !maxWaitTimeoutRef.current) {
-        maxWaitTimeoutRef.current = setTimeout(() => {
-          maxWaitTimeoutRef.current = null;
+      if (options_.maxWait < Infinity && !maxWaitTimeoutReference.current) {
+        maxWaitTimeoutReference.current = setTimeout(() => {
+          maxWaitTimeoutReference.current = null;
           invokeFunction();
-        }, opts.maxWait);
+        }, options_.maxWait);
       }
     },
-    [opts.delay, opts.leading, opts.maxWait, invokeFunction]
+    [options_.delay, options_.leading, options_.maxWait, invokeFunction]
   );
 
   // Cleanup on unmount

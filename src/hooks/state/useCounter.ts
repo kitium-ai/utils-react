@@ -40,8 +40,8 @@ export function useCounter(
     increment: () => void;
     decrement: () => void;
     reset: () => void;
-    setCount: (value: number | ((prev: number) => number)) => void;
-  }
+    setCount: (value: number | ((previous: number) => number)) => void;
+  },
 ] {
   const { min = -Infinity, max = Infinity, step = 1 } = options;
   const [count, setCount] = useState(initialValue);
@@ -60,4 +60,3 @@ export function useCounter(
 
   return [count, { increment, decrement, reset, setCount }];
 }
-

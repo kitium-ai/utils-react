@@ -27,13 +27,13 @@ export interface UseIntersectionObserverOptions extends IntersectionObserverInit
  * ```
  */
 export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
-  ref: RefObject<T>,
+  reference: RefObject<T>,
   options: UseIntersectionObserverOptions = {}
 ): IntersectionObserverEntry | null {
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
 
   useEffect(() => {
-    const element = ref.current;
+    const element = reference.current;
     if (!element) {
       return;
     }
@@ -53,8 +53,7 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
     return () => {
       observer.disconnect();
     };
-  }, [ref, options.threshold, options.root, options.rootMargin, options.freezeOnceVisible]);
+  }, [reference, options.threshold, options.root, options.rootMargin, options.freezeOnceVisible]);
 
   return entry;
 }
-
