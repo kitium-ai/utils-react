@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 
 /**
@@ -12,35 +12,33 @@ export interface UseIntersectionObserverOptions extends IntersectionObserverInit
  * Hook that tracks element intersection with viewport
  *
  * @template T - The type of the HTML element
- * @param ref - Ref object attached to the element
  * @param options - IntersectionObserver options
- * @returns IntersectionObserverEntry or null
+ * @returns Tuple of [ref, isIntersecting]
  *
  * @example
  * ```tsx
  * const Component = () => {
- *   const ref = useRef<HTMLDivElement>(null);
- *   const entry = useIntersectionObserver(ref, { threshold: 0.5 });
- *   const isVisible = entry?.isIntersecting ?? false;
+ *   const [ref, isVisible] = useIntersectionObserver<HTMLDivElement>({ threshold: 0.5 });
  *   return <div ref={ref}>{isVisible ? 'Visible' : 'Hidden'}</div>;
  * };
  * ```
  */
 export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
-  reference: RefObject<T>,
   options: UseIntersectionObserverOptions = {}
-): IntersectionObserverEntry | null {
-  const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
+): [RefObject<T>, boolean] {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const reference = useRef<T>(null);
+  const [element, setElement] = useState<T | null>(null);
+
+  // Check ref.current on each render to detect element attachment
+  if (reference.current !== element) {
+    setElement(reference.current);
+  }
 
   useEffect(() => {
-    const element = reference.current;
-    if (!element) {
-      return;
-    }
-
     const observer = new IntersectionObserver(([entry]) => {
       if (entry) {
-        setEntry(entry);
+        setIsIntersecting(entry.isIntersecting);
 
         if (options.freezeOnceVisible && entry.isIntersecting) {
           observer.disconnect();
@@ -48,12 +46,14 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
       }
     }, options);
 
-    observer.observe(element);
+    if (element) {
+      observer.observe(element);
+    }
 
     return () => {
       observer.disconnect();
     };
-  }, [reference, options.threshold, options.root, options.rootMargin, options.freezeOnceVisible]);
+  }, [element, options.threshold, options.root, options.rootMargin, options.freezeOnceVisible]);
 
-  return entry;
+  return [reference, isIntersecting];
 }

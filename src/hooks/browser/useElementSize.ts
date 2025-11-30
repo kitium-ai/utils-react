@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { RefObject } from 'react';
 
 /**
@@ -13,22 +13,19 @@ export interface ElementSize {
  * Hook that tracks the size of an element
  *
  * @template T - The type of the HTML element
- * @param ref - Ref object attached to the element
- * @returns Current element dimensions
+ * @returns Tuple of [ref, size]
  *
  * @example
  * ```tsx
  * const Component = () => {
- *   const ref = useRef<HTMLDivElement>(null);
- *   const { width, height } = useElementSize(ref);
+ *   const [ref, { width, height }] = useElementSize<HTMLDivElement>();
  *   return <div ref={ref}>Size: {width}x{height}</div>;
  * };
  * ```
  */
-export function useElementSize<T extends HTMLElement = HTMLElement>(
-  reference: RefObject<T>
-): ElementSize {
+export function useElementSize<T extends HTMLElement = HTMLElement>(): [RefObject<T>, ElementSize] {
   const [size, setSize] = useState<ElementSize>({ width: 0, height: 0 });
+  const reference = useRef<T>(null);
 
   useEffect(() => {
     const element = reference.current;
@@ -50,7 +47,7 @@ export function useElementSize<T extends HTMLElement = HTMLElement>(
     return () => {
       resizeObserver.disconnect();
     };
-  }, [reference]);
+  }, []);
 
-  return size;
+  return [reference, size];
 }

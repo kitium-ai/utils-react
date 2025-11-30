@@ -1,4 +1,4 @@
-import type { DependencyList,EffectCallback } from 'react';
+import type { DependencyList, EffectCallback } from 'react';
 import { useEffect, useLayoutEffect } from 'react';
 
 /**

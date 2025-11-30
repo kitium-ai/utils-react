@@ -73,7 +73,6 @@ export function useAsync<T>(
     return () => {
       cancelled = true;
     };
-     
   }, deps);
 
   return state;

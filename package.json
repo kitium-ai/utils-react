@@ -1,6 +1,6 @@
 {
   "name": "@kitiumai/utils-react",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Comprehensive React utilities and custom hooks for KitiumAI projects",
   "license": "MIT",
   "type": "module",
@@ -18,10 +18,75 @@
       "import": "./dist/hooks/index.js",
       "require": "./dist/hooks/index.cjs"
     },
+    "./hooks/async": {
+      "types": "./dist/hooks/async/index.d.ts",
+      "import": "./dist/hooks/async/index.js",
+      "require": "./dist/hooks/async/index.cjs"
+    },
+    "./hooks/state": {
+      "types": "./dist/hooks/state/index.d.ts",
+      "import": "./dist/hooks/state/index.js",
+      "require": "./dist/hooks/state/index.cjs"
+    },
+    "./hooks/form": {
+      "types": "./dist/hooks/form/index.d.ts",
+      "import": "./dist/hooks/form/index.js",
+      "require": "./dist/hooks/form/index.cjs"
+    },
+    "./hooks/browser": {
+      "types": "./dist/hooks/browser/index.d.ts",
+      "import": "./dist/hooks/browser/index.js",
+      "require": "./dist/hooks/browser/index.cjs"
+    },
+    "./hooks/events": {
+      "types": "./dist/hooks/events/index.d.ts",
+      "import": "./dist/hooks/events/index.js",
+      "require": "./dist/hooks/events/index.cjs"
+    },
+    "./hooks/lifecycle": {
+      "types": "./dist/hooks/lifecycle/index.d.ts",
+      "import": "./dist/hooks/lifecycle/index.js",
+      "require": "./dist/hooks/lifecycle/index.cjs"
+    },
+    "./hooks/performance": {
+      "types": "./dist/hooks/performance/index.d.ts",
+      "import": "./dist/hooks/performance/index.js",
+      "require": "./dist/hooks/performance/index.cjs"
+    },
+    "./hooks/ui": {
+      "types": "./dist/hooks/ui/index.d.ts",
+      "import": "./dist/hooks/ui/index.js",
+      "require": "./dist/hooks/ui/index.cjs"
+    },
+    "./hooks/utility": {
+      "types": "./dist/hooks/utility/index.d.ts",
+      "import": "./dist/hooks/utility/index.js",
+      "require": "./dist/hooks/utility/index.cjs"
+    },
     "./integrations": {
       "types": "./dist/integrations/index.d.ts",
       "import": "./dist/integrations/index.js",
       "require": "./dist/integrations/index.cjs"
+    },
+    "./integrations/logger": {
+      "types": "./dist/integrations/useLogger.d.ts",
+      "import": "./dist/integrations/useLogger.js",
+      "require": "./dist/integrations/useLogger.cjs"
+    },
+    "./integrations/types": {
+      "types": "./dist/integrations/useTypes.d.ts",
+      "import": "./dist/integrations/useTypes.js",
+      "require": "./dist/integrations/useTypes.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./utils/ssr": {
+      "types": "./dist/utils/ssr.d.ts",
+      "import": "./dist/utils/ssr.js",
+      "require": "./dist/utils/ssr.cjs"
     }
   },
   "files": [
@@ -95,10 +160,10 @@
     }
   },
   "devDependencies": {
-    "@kitiumai/config": "^2.0.0",
-    "@kitiumai/lint": "^2.0.0",
+    "@kitiumai/config": "^2.0.1",
+    "@kitiumai/lint": "^2.0.1",
     "@kitiumai/scripts": "^1.0.0",
-    "@kitiumai/vitest-helpers": "^2.0.0",
+    "@kitiumai/vitest-helpers": "^2.0.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.0.0",
@@ -119,7 +184,9 @@
     "vitest": "^2.0.0"
   },
   "dependencies": {
-    "@kitiumai/logger": "^2.0.0",
-    "@kitiumai/types": "^2.0.0"
+    "@kitiumai/logger": "^2.0.1",
+    "@kitiumai/types": "^2.0.1",
+    "@kitiumai/error": "^2.0.1",
+    "@kitiumai/utils-ts": "^2.0.1"
   }
 }

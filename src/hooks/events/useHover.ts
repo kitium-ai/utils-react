@@ -22,15 +22,30 @@ import type { RefObject } from 'react';
 export function useHover<T extends HTMLElement = HTMLElement>(): [RefObject<T>, boolean] {
   const [isHovered, setIsHovered] = useState(false);
   const reference = useRef<T>(null);
+  const [element, setElement] = useState<T | null>(null);
+
+  // Check ref.current on each render to detect element attachment
+  if (reference.current !== element) {
+    setElement(reference.current);
+  }
+
+  const handlersRef = useRef({
+    handleMouseEnter: () => setIsHovered(true),
+    handleMouseLeave: () => setIsHovered(false),
+  });
+
+  // Update handlers on each render to capture current setState
+  handlersRef.current = {
+    handleMouseEnter: () => setIsHovered(true),
+    handleMouseLeave: () => setIsHovered(false),
+  };
 
   useEffect(() => {
-    const element = reference.current;
     if (!element) {
       return;
     }
 
-    const handleMouseEnter = () => setIsHovered(true);
-    const handleMouseLeave = () => setIsHovered(false);
+    const { handleMouseEnter, handleMouseLeave } = handlersRef.current;
 
     element.addEventListener('mouseenter', handleMouseEnter);
     element.addEventListener('mouseleave', handleMouseLeave);
@@ -39,7 +54,7 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [RefObject<T>, 
       element.removeEventListener('mouseenter', handleMouseEnter);
       element.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, []);
+  }, [element]);
 
   return [reference, isHovered];
 }
