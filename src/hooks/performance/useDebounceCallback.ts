@@ -2,8 +2,8 @@
  * Hook that debounces a callback function
  */
 
-import { createDelayedCallback } from './performance/delayed/createDelayedCallback.js';
-import type { AnyCallable, DelayedFunction } from './performance/delayed/types.js';
+import { createDelayedCallback } from './delayed/createDelayedCallback.js';
+import type { AnyCallable, DelayedFunction } from './delayed/types.js';
 
 export type DebounceOptions = {
   /**

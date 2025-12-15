@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+// eslint-disable-next-line no-restricted-imports -- Internal package utility
+import { isBrowser } from '../../utils/ssr.js';
+
 /**
  * Hook that tracks a media query match
  *
@@ -16,14 +19,14 @@ import { useEffect, useState } from 'react';
  */
 export function useMediaQuery(query: string): boolean {
   const [isMatching, setIsMatching] = useState(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return false;
     }
     return window.matchMedia(query).matches;
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return;
     }
 

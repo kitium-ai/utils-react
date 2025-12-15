@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { flushSync } from 'react-dom';
 
 /**
  * Hook that throttles a value
@@ -30,9 +29,7 @@ export function useThrottle<T>(value: T, delay = 500): T {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      flushSync(() => {
-        setThrottledValue(value);
-      });
+      setThrottledValue(value);
     }, delay);
 
     return () => {

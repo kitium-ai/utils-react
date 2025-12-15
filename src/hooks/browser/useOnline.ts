@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+// eslint-disable-next-line no-restricted-imports -- Internal package utility
+import { isBrowser } from '../../utils/ssr.js';
+
 /**
  * Hook that tracks online/offline status
  *
@@ -15,14 +18,14 @@ import { useEffect, useState } from 'react';
  */
 export function useOnline(): boolean {
   const [isOnline, setIsOnline] = useState(() => {
-    if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    if (!isBrowser() || typeof navigator === 'undefined') {
       return true;
     }
     return navigator.onLine;
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return;
     }
 

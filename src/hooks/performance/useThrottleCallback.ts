@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useRef } from 'react';
+/**
+ * Hook that throttles a callback function
+ */
 
-type AnyFunction = (...args: unknown[]) => unknown;
+import { createDelayedCallback } from './delayed/createDelayedCallback.js';
+import type { AnyCallable, DelayedFunction } from './delayed/types.js';
 
 export type ThrottleOptions = {
   /**
@@ -17,24 +20,10 @@ export type ThrottleOptions = {
   trailing?: boolean;
 };
 
-export type ThrottledFunction<T extends (...args: unknown[]) => unknown> = {
-  /**
-   * The throttled function
-   */
-  (...args: Parameters<T>): void;
-  /**
-   * Cancel any pending invocations
-   */
-  cancel: () => void;
-  /**
-   * Immediately invoke any pending invocations
-   */
-  flush: () => void;
-  /**
-   * Check if there is a pending invocation
-   */
-  isPending: () => boolean;
-};
+/**
+ * Throttled function type with cancel, flush, and isPending methods
+ */
+export type ThrottledFunction<T extends AnyCallable> = DelayedFunction<T>;
 
 /**
  * Hook that throttles a callback function with advanced options
@@ -67,12 +56,12 @@ export type ThrottledFunction<T extends (...args: unknown[]) => unknown> = {
  * - Cancel and flush methods for manual control
  * - Backwards compatible with simple delay parameter
  */
-export function useThrottleCallback<T extends AnyFunction>(
+export function useThrottleCallback<T extends AnyCallable>(
   callback: T,
   options: ThrottleOptions | number = 500
 ): ThrottledFunction<T> {
   // Normalize options
-  const options_: Required<ThrottleOptions> =
+  const normalizedOptions =
     typeof options === 'number'
       ? { delay: options, leading: true, trailing: true }
       : {
@@ -81,93 +70,10 @@ export function useThrottleCallback<T extends AnyFunction>(
           trailing: options.trailing ?? true,
         };
 
-  const timeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastRunReference = useRef<number>(0);
-  const callbackReference = useRef(callback);
-  const pendingArgumentsReference = useRef<Parameters<T> | null>(null);
-
-  useEffect(() => {
-    callbackReference.current = callback;
-  }, [callback]);
-
-  const invokeFunction = useCallback((args: Parameters<T>) => {
-    callbackReference.current(...args);
-    lastRunReference.current = Date.now();
-    pendingArgumentsReference.current = null;
-  }, []);
-
-  const cancel = useCallback(() => {
-    if (timeoutReference.current) {
-      clearTimeout(timeoutReference.current);
-      timeoutReference.current = null;
-    }
-    pendingArgumentsReference.current = null;
-  }, []);
-
-  const flush = useCallback(() => {
-    const args = pendingArgumentsReference.current;
-    if (args) {
-      cancel();
-      invokeFunction(args);
-    }
-  }, [cancel, invokeFunction]);
-
-  const isPending = useCallback(() => {
-    return pendingArgumentsReference.current !== null;
-  }, []);
-
-  const throttledCallback = useCallback(
-    (...args: Parameters<T>) => {
-      const now = Date.now();
-      const timeSinceLastRun = now - lastRunReference.current;
-
-      pendingArgumentsReference.current = args;
-
-      // Leading edge invocation
-      if (timeSinceLastRun >= options_.delay) {
-        if (options_.leading) {
-          invokeFunction(args);
-        } else if (options_.trailing) {
-          // If leading is disabled but trailing is enabled, schedule for later
-          timeoutReference.current = setTimeout(() => {
-            if (pendingArgumentsReference.current) {
-              invokeFunction(pendingArgumentsReference.current);
-            }
-            timeoutReference.current = null;
-          }, options_.delay);
-        }
-        return;
-      }
-
-      // Trailing edge invocation
-      if (options_.trailing) {
-        if (timeoutReference.current) {
-          clearTimeout(timeoutReference.current);
-        }
-
-        timeoutReference.current = setTimeout(() => {
-          if (pendingArgumentsReference.current) {
-            invokeFunction(pendingArgumentsReference.current);
-          }
-          timeoutReference.current = null;
-        }, options_.delay - timeSinceLastRun);
-      }
-    },
-    [options_.delay, options_.leading, options_.trailing, invokeFunction]
-  );
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cancel();
-    };
-  }, [cancel]);
-
-  // Attach methods to the throttled function
-  const enhancedCallback = throttledCallback as ThrottledFunction<T>;
-  enhancedCallback.cancel = cancel;
-  enhancedCallback.flush = flush;
-  enhancedCallback.isPending = isPending;
-
-  return enhancedCallback;
+  return createDelayedCallback(callback, {
+    mode: 'throttle',
+    delay: normalizedOptions.delay,
+    leading: normalizedOptions.leading,
+    trailing: normalizedOptions.trailing,
+  });
 }

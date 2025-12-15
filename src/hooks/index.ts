@@ -1,11 +1,11 @@
 /**
  * Custom hooks export
+ *
+ * For backward compatibility, commonly used hooks are re-exported here.
+ * New code should import from domain-specific subdirectories for better tree-shaking.
  */
 
-// Original hooks
-export * from './useDebounce.js';
-export * from './useDebounceCallback.js';
-export * from './useLocalStorage.js';
+// Root-level hooks (intentionally at root)
 export * from './usePrevious.js';
 export * from './useToggle.js';
 
@@ -15,7 +15,7 @@ export * from './state/index.js';
 // Lifecycle hooks
 export * from './lifecycle/index.js';
 
-// Browser API hooks
+// Browser API hooks (includes useLocalStorage from browser/)
 export * from './browser/index.js';
 
 // Event hooks

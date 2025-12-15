@@ -1,25 +1,33 @@
 /**
- * React Types Integration Hook
- * Provides React hooks for @kitiumai/types 2.0 integration
+ * React Types Integration Hooks
+ * Uses integration utilities from @kitiumai/utils-ts and @kitiumai/types 3.x
  */
 
-import type { IsoDateTimeString } from '@kitiumai/types/primitives';
+import { emailUtils, idUtils, type IsoDateTimeString } from '@kitiumai/utils-ts';
 import { useCallback, useMemo, useState } from 'react';
 
 /**
  * Hook to manage branded IDs with type safety
+ * Uses branded ID utilities from @kitiumai/utils-ts/integrations/types
  */
 export function useBrandedId<B extends string>(
   initialId?: string,
-  _brand?: B
+  brand?: B
 ): readonly [string | undefined, (newId: string) => void] {
-  const [id, setId] = useState<string | undefined>(initialId);
+  const [rawId, setRawId] = useState<string | undefined>(initialId);
 
   const updateId = useCallback((newId: string) => {
-    setId(newId);
+    setRawId(newId);
   }, []);
 
-  return [id, updateId] as const;
+  const brandedId = useMemo(() => {
+    if (!rawId || !brand) {
+      return rawId;
+    }
+    return idUtils.create(rawId, brand) as unknown as string;
+  }, [rawId, brand]);
+
+  return [brandedId, updateId] as const;
 }
 
 /**
@@ -45,12 +53,10 @@ export function useIsoDateTime(
 
 /**
  * Hook to validate email addresses
+ * Delegates to @kitiumai/utils-ts/@kitiumai/types email validators when available
  */
 export function useEmailValidator(): (email: string) => boolean {
-  return useCallback((email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }, []);
+  return useCallback((email: string): boolean => emailUtils.isValid(email), []);
 }
 
 /**
@@ -67,21 +73,23 @@ export function useValidatedEmail(
   const [email, setEmail] = useState(initialEmail);
   const validateEmail = useEmailValidator();
 
+  const normalizedEmail = useMemo(() => (email ? emailUtils.normalize(email) : email), [email]);
+
   const isValid = useMemo(() => {
-    if (!email) {
+    if (!normalizedEmail) {
       return false;
     }
-    return validateEmail(email);
-  }, [email, validateEmail]);
+    return validateEmail(normalizedEmail);
+  }, [normalizedEmail, validateEmail]);
 
   const error = useMemo(() => {
-    if (!email) {
+    if (!normalizedEmail) {
       return null;
     }
     return isValid ? null : 'Invalid email address';
-  }, [email, isValid]);
+  }, [normalizedEmail, isValid]);
 
-  return [email, setEmail, isValid, error] as const;
+  return [normalizedEmail, setEmail, isValid, error] as const;
 }
 
 /**

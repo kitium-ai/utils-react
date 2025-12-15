@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import {
   useMount,
   useUnmount,
@@ -79,9 +79,10 @@ describe('lifecycle hooks', () => {
       });
 
       const initialCount = renderCount;
-      result.current();
+      act(() => {
+        result.current();
+      });
       expect(renderCount).toBeGreaterThan(initialCount);
     });
   });
 });
-

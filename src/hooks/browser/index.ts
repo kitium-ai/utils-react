@@ -5,6 +5,7 @@
 export * from './useClipboard.js';
 export * from './useElementSize.js';
 export * from './useIntersectionObserver.js';
+export * from './useLocalStorage.js';
 export * from './useMediaQuery.js';
 export * from './useOnline.js';
 export * from './useSessionStorage.js';

@@ -1,9 +1,10 @@
 /**
- * React Logger Hook
- * Provides React hooks for @kitiumai/logger 2.0 integration
+ * React Logger Hooks
+ * Uses @kitiumai/logger 3.x and @kitiumai/utils-ts logger integrations
  */
 
 import { createLogger, getLogger, type ILogger } from '@kitiumai/logger';
+import { createPerformanceLogger } from '@kitiumai/utils-ts';
 import { useEffect, useMemo, useRef } from 'react';
 
 /**
@@ -16,6 +17,7 @@ export function useLogger(_name: string): ILogger {
     if (existing) {
       return existing;
     }
+    // Fallback to a production preset logger when no global logger is initialized
     return createLogger('production');
   }, []);
 
@@ -90,27 +92,15 @@ export function useLifecycleLogger(componentName: string): void {
 
 /**
  * Hook to log performance metrics
+ * Delegates timing to @kitiumai/utils-ts logger integration
  */
 export function usePerformanceLogger(operationName: string): (operation: () => void) => void {
-  const logger = useLogger('performance');
-  const getNow =
-    typeof performance !== 'undefined' && typeof performance.now === 'function'
-      ? () => performance.now()
-      : () => Date.now();
+  const performanceLogger = useMemo(() => createPerformanceLogger('react'), []);
 
   return useMemo(
     () => (operation: () => void) => {
-      const start = getNow();
-      try {
-        operation();
-      } finally {
-        const duration = getNow() - start;
-        logger.debug(`Performance: ${operationName}`, {
-          duration,
-          unit: 'ms',
-        });
-      }
+      performanceLogger.measure(operationName, operation);
     },
-    [getNow, logger, operationName]
+    [operationName, performanceLogger]
   );
 }

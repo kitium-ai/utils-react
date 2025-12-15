@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { logHookWarning } from '../utils/errorLogging.js';
+import { isBrowser } from '../utils/ssr.js';
+
 type SetValue<T> = (value: T | ((value_: T) => T)) => void;
 
 /**
@@ -25,10 +28,11 @@ type SetValue<T> = (value: T | ((value_: T) => T)) => void;
  * In SSR environments, it returns the initialValue and skips localStorage operations.
  * Storage events are also safely handled with proper environment checks.
  */
+// eslint-disable-next-line max-lines-per-function -- Storage hook requires event listeners and error handling
 export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
   // Get initial value from localStorage or use initialValue
   const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return initialValue;
     }
 
@@ -36,7 +40,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
     } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
+      logHookWarning('useLocalStorage', `Error reading localStorage key "${key}"`, { error, key });
       return initialValue;
     }
   });
@@ -52,11 +56,14 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
         setStoredValue(valueToStore);
 
         // Save to localStorage
-        if (typeof window !== 'undefined') {
+        if (isBrowser()) {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
         }
       } catch (error) {
-        console.warn(`Error setting localStorage key "${key}":`, error);
+        logHookWarning('useLocalStorage', `Error setting localStorage key "${key}"`, {
+          error,
+          key,
+        });
       }
     },
     [key, storedValue]
@@ -64,7 +71,7 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
 
   // Listen for changes in other tabs/windows
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return;
     }
 
@@ -73,7 +80,10 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T
         try {
           setStoredValue(JSON.parse(event.newValue));
         } catch (error) {
-          console.warn(`Error parsing storage event for key "${key}":`, error);
+          logHookWarning('useLocalStorage', `Error parsing storage event for key "${key}"`, {
+            error,
+            key,
+          });
         }
       }
     };

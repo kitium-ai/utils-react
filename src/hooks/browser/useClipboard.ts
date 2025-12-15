@@ -1,5 +1,8 @@
 import { useCallback, useState } from 'react';
 
+// eslint-disable-next-line no-restricted-imports -- Internal package utility
+import { logHookWarning } from '../../utils/errorLogging.js';
+
 type UseClipboardActions = {
   copy: (text: string) => Promise<boolean>;
   reset: () => void;
@@ -46,7 +49,7 @@ export function useClipboard(initialValue = ''): UseClipboardReturn {
       }
       return isSuccess;
     } catch (error) {
-      console.warn('Failed to copy to clipboard:', error);
+      logHookWarning('useClipboard', 'Failed to copy to clipboard', { error });
       return false;
     }
   }, []);

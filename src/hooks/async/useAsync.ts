@@ -1,5 +1,4 @@
 import { type DependencyList, useEffect, useState } from 'react';
-import { flushSync } from 'react-dom';
 
 /**
  * Async state
@@ -45,9 +44,7 @@ export function useAsync<T>(
   useEffect(() => {
     let isCancelled = false;
 
-    flushSync(() => {
-      setState({ loading: true, error: null, value: null });
-    });
+    setState({ loading: true, error: null, value: null });
 
     const run = async (): Promise<void> => {
       try {
@@ -56,20 +53,16 @@ export function useAsync<T>(
           return;
         }
 
-        flushSync(() => {
-          setState({ loading: false, error: null, value });
-        });
+        setState({ loading: false, error: null, value });
       } catch (error) {
         if (isCancelled) {
           return;
         }
 
-        flushSync(() => {
-          setState({
-            loading: false,
-            error: error instanceof Error ? error : new Error(String(error)),
-            value: null,
-          });
+        setState({
+          loading: false,
+          error: error instanceof Error ? error : new Error(String(error)),
+          value: null,
         });
       }
     };

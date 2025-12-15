@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v3.0.0] - 2025-12-15
+
+### BREAKING CHANGES
+
+- **Import Path Changes**: Storage and performance hooks moved to organized subdirectories
+  - `useLocalStorage` and `useSessionStorage` moved to `hooks/browser/` (re-exported at root)
+  - `useDebounce` and `useDebounceCallback` moved to `hooks/performance/` (re-exported at root)
+  - See [MIGRATION.md](./MIGRATION.md) for detailed upgrade guide
+
+- **flushSync Removal**: Removed `flushSync` from `useThrottle`, `useAsync`, and `useUpdate`
+  - Improves React Native compatibility
+  - Allows natural React state batching
+  - May affect timing in edge cases (transparent improvement)
+
+### Added
+
+- **Storage Factory**: New `createStorageHook` factory eliminates 90% duplication between storage hooks
+- **Delayed Callback Factory**: New `createDelayedCallback` factory unifies debounce/throttle infrastructure
+- **Error Logging Utility**: Structured error logging via `logHookWarning` and `logHookError`
+- **SSR Consolidation**: Centralized `isBrowser()` utility for consistent SSR checks
+- **MIGRATION.md**: Comprehensive migration guide for v3.0.0 upgrade
+
+### Changed
+
+- **Code Quality Improvements**:
+  - Reduced total codebase by ~300 lines (11% reduction)
+  - Storage hooks: 68% code reduction through factory pattern
+  - Delayed callbacks: 54-57% code reduction through factory pattern
+  - Consolidated 7 `console.warn` calls to structured logging utility
+
+- **Infrastructure**:
+  - Replaced 8 instances of `typeof window === 'undefined'` with `isBrowser()`
+  - Updated file organization for better tree-shaking
+  - Enhanced JSDoc documentation for all moved hooks
+
+### Fixed
+
+- React Native compatibility (removed `flushSync` dependency)
+- Consistent error handling across all hooks
+- SSR safety through unified checks
+
 ## [v2.0.1] - 2025-11-30
 
 ### Added

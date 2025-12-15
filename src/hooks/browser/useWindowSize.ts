@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+// eslint-disable-next-line no-restricted-imports -- Internal package utility
+import { isBrowser } from '../../utils/ssr.js';
+
 /**
  * Window size dimensions
  */
@@ -23,7 +26,7 @@ export type WindowSize = {
  */
 export function useWindowSize(): WindowSize {
   const [size, setSize] = useState<WindowSize>(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return { width: 0, height: 0 };
     }
     return {
@@ -33,7 +36,7 @@ export function useWindowSize(): WindowSize {
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return;
     }
 

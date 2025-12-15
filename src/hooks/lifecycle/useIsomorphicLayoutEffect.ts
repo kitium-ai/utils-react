@@ -1,5 +1,8 @@
 import { type DependencyList, type EffectCallback, useEffect, useLayoutEffect } from 'react';
 
+// eslint-disable-next-line no-restricted-imports -- Internal package utility
+import { isBrowser } from '../../utils/ssr.js';
+
 /**
  * SSR-safe version of useLayoutEffect
  * Falls back to useEffect on the server
@@ -17,7 +20,7 @@ import { type DependencyList, type EffectCallback, useEffect, useLayoutEffect } 
  * ```
  */
 export function useIsomorphicLayoutEffect(effect: EffectCallback, deps?: DependencyList): void {
-  if (typeof window === 'undefined') {
+  if (!isBrowser()) {
     useEffect(effect, deps);
   } else {
     useLayoutEffect(effect, deps);

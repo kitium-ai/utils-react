@@ -41,7 +41,9 @@ describe('browser hooks', () => {
       const { result } = renderHook(() =>
         useSessionStorage('test', 'initial')
       );
-      result.current[1]('updated');
+      act(() => {
+        result.current[1]('updated');
+      });
       expect(sessionStorage.getItem('test')).toBe(JSON.stringify('updated'));
     });
   });
@@ -85,7 +87,10 @@ describe('browser hooks', () => {
       });
 
       const { result } = renderHook(() => useClipboard());
-      const success = await result.current[1].copy('test');
+      let success = false;
+      await act(async () => {
+        success = await result.current[1].copy('test');
+      });
       expect(success).toBe(true);
       expect(writeTextSpy).toHaveBeenCalledWith('test');
     });
@@ -261,7 +266,9 @@ describe('browser hooks', () => {
         key: 'test',
         newValue: JSON.stringify('from-another-tab'),
       });
-      window.dispatchEvent(event);
+      act(() => {
+        window.dispatchEvent(event);
+      });
 
       await waitFor(() => {
         expect(result.current[0]).toBe('from-another-tab');
@@ -276,4 +283,3 @@ describe('browser hooks', () => {
     });
   });
 });
-

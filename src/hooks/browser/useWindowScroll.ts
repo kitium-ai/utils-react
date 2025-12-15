@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+// eslint-disable-next-line no-restricted-imports -- Internal package utility
+import { isBrowser } from '../../utils/ssr.js';
+
 /**
  * Scroll position
  */
@@ -23,7 +26,7 @@ export type ScrollPosition = {
  */
 export function useWindowScroll(): ScrollPosition {
   const [position, setPosition] = useState<ScrollPosition>(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return { x: 0, y: 0 };
     }
     return {
@@ -33,7 +36,7 @@ export function useWindowScroll(): ScrollPosition {
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
       return;
     }
 
