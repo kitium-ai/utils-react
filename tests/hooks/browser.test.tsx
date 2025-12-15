@@ -25,9 +25,7 @@ describe('browser hooks', () => {
 
   describe('useSessionStorage', () => {
     it('should initialize with value', () => {
-      const { result } = renderHook(() =>
-        useSessionStorage('test', 'initial')
-      );
+      const { result } = renderHook(() => useSessionStorage('test', 'initial'));
       expect(result.current[0]).toBe('initial');
     });
 
@@ -38,9 +36,7 @@ describe('browser hooks', () => {
     });
 
     it('should update sessionStorage', () => {
-      const { result } = renderHook(() =>
-        useSessionStorage('test', 'initial')
-      );
+      const { result } = renderHook(() => useSessionStorage('test', 'initial'));
       act(() => {
         result.current[1]('updated');
       });
@@ -180,7 +176,8 @@ describe('browser hooks', () => {
         unobserve: vi.fn(),
         disconnect: vi.fn(),
       });
-      global.IntersectionObserver = mockIntersectionObserver as unknown as typeof IntersectionObserver;
+      global.IntersectionObserver =
+        mockIntersectionObserver as unknown as typeof IntersectionObserver;
 
       const { result } = renderHook(() =>
         useIntersectionObserver<HTMLDivElement>({ threshold: 0.5 })
@@ -199,7 +196,8 @@ describe('browser hooks', () => {
         unobserve: vi.fn(),
         disconnect: vi.fn(),
       });
-      global.IntersectionObserver = mockIntersectionObserver as unknown as typeof IntersectionObserver;
+      global.IntersectionObserver =
+        mockIntersectionObserver as unknown as typeof IntersectionObserver;
 
       const options = { threshold: 0.5, rootMargin: '10px' };
       renderHook(() => useIntersectionObserver<HTMLDivElement>(options));

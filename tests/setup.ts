@@ -33,7 +33,10 @@ function createMemoryStorage(): Storage {
 function ensureStorage(name: 'localStorage' | 'sessionStorage'): void {
   const current = (globalThis as unknown as Record<string, unknown>)[name];
   const hasClear =
-    typeof current === 'object' && current !== null && 'clear' in current && typeof (current as Storage).clear === 'function';
+    typeof current === 'object' &&
+    current !== null &&
+    'clear' in current &&
+    typeof (current as Storage).clear === 'function';
 
   if (hasClear) {
     return;

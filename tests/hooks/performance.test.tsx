@@ -22,10 +22,9 @@ describe('performance hooks', () => {
     });
 
     it('should throttle value changes', async () => {
-      const { result, rerender } = renderHook(
-        ({ value }) => useThrottle(value, 500),
-        { initialProps: { value: 1 } }
-      );
+      const { result, rerender } = renderHook(({ value }) => useThrottle(value, 500), {
+        initialProps: { value: 1 },
+      });
 
       expect(result.current).toBe(1);
 

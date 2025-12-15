@@ -2,9 +2,215 @@
  * Factory for creating debounced and throttled callbacks
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { type MutableRefObject, useCallback, useEffect, useRef } from 'react';
 
 import type { AnyCallable, DelayedCallbackConfig, DelayedFunction } from './types.js';
+
+type DelayedReferences<T extends AnyCallable> = {
+  timeoutReference: MutableRefObject<ReturnType<typeof setTimeout> | null>;
+  maxWaitTimeoutReference: MutableRefObject<ReturnType<typeof setTimeout> | null>;
+  callbackReference: MutableRefObject<T>;
+  lastCallTimeReference: MutableRefObject<number>;
+  lastInvokeTimeReference: MutableRefObject<number>;
+  pendingArgumentsReference: MutableRefObject<Parameters<T> | null>;
+};
+
+function useDelayedReferences<T extends AnyCallable>(function_: T): DelayedReferences<T> {
+  const timeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const maxWaitTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const callbackReference = useRef(function_);
+  const lastCallTimeReference = useRef<number>(0);
+  const lastInvokeTimeReference = useRef<number>(0);
+  const pendingArgumentsReference = useRef<Parameters<T> | null>(null);
+
+  useEffect(() => {
+    callbackReference.current = function_;
+  }, [function_]);
+
+  return {
+    timeoutReference,
+    maxWaitTimeoutReference,
+    callbackReference,
+    lastCallTimeReference,
+    lastInvokeTimeReference,
+    pendingArgumentsReference,
+  };
+}
+
+function useInvoke<T extends AnyCallable>(references: DelayedReferences<T>): () => void {
+  return useCallback((): void => {
+    const args = references.pendingArgumentsReference.current;
+    if (!args) {
+      return;
+    }
+
+    references.callbackReference.current(...args);
+    references.lastInvokeTimeReference.current = Date.now();
+    references.pendingArgumentsReference.current = null;
+  }, [references]);
+}
+
+function useCancel<T extends AnyCallable>(references: DelayedReferences<T>): () => void {
+  return useCallback((): void => {
+    if (references.timeoutReference.current) {
+      clearTimeout(references.timeoutReference.current);
+      references.timeoutReference.current = null;
+    }
+    if (references.maxWaitTimeoutReference.current) {
+      clearTimeout(references.maxWaitTimeoutReference.current);
+      references.maxWaitTimeoutReference.current = null;
+    }
+
+    references.pendingArgumentsReference.current = null;
+    references.lastCallTimeReference.current = 0;
+  }, [references]);
+}
+
+function useFlush<T extends AnyCallable>(
+  references: DelayedReferences<T>,
+  config: DelayedCallbackConfig
+): () => void {
+  return useCallback((): void => {
+    const args = references.pendingArgumentsReference.current;
+    if (!args) {
+      return;
+    }
+
+    const shouldSkipInvoke = config.mode === 'debounce' && config.leading;
+
+    if (references.timeoutReference.current) {
+      clearTimeout(references.timeoutReference.current);
+      references.timeoutReference.current = null;
+    }
+    if (references.maxWaitTimeoutReference.current) {
+      clearTimeout(references.maxWaitTimeoutReference.current);
+      references.maxWaitTimeoutReference.current = null;
+    }
+
+    references.pendingArgumentsReference.current = null;
+    references.lastCallTimeReference.current = 0;
+
+    if (shouldSkipInvoke) {
+      return;
+    }
+
+    references.callbackReference.current(...args);
+    references.lastInvokeTimeReference.current = Date.now();
+  }, [config.leading, config.mode, references]);
+}
+
+function useIsPending<T extends AnyCallable>(references: DelayedReferences<T>): () => boolean {
+  return useCallback(
+    (): boolean => references.pendingArgumentsReference.current !== null,
+    [references]
+  );
+}
+
+function useDebounceHandler<T extends AnyCallable>(
+  references: DelayedReferences<T>,
+  config: DelayedCallbackConfig,
+  invokeFunction: () => void
+): () => void {
+  return useCallback((): void => {
+    const isLeadingInvoke = config.leading && !references.timeoutReference.current;
+
+    if (references.timeoutReference.current) {
+      clearTimeout(references.timeoutReference.current);
+    }
+
+    if (isLeadingInvoke) {
+      invokeFunction();
+      references.pendingArgumentsReference.current = null;
+    }
+
+    references.timeoutReference.current = setTimeout(() => {
+      references.timeoutReference.current = null;
+      if (!config.leading || references.pendingArgumentsReference.current) {
+        invokeFunction();
+      }
+    }, config.delay);
+
+    const shouldSetMaxWait =
+      config.maxWait && config.maxWait < Infinity && !references.maxWaitTimeoutReference.current;
+    if (shouldSetMaxWait) {
+      references.maxWaitTimeoutReference.current = setTimeout(() => {
+        references.maxWaitTimeoutReference.current = null;
+        invokeFunction();
+      }, config.maxWait);
+    }
+  }, [config.delay, config.leading, config.maxWait, invokeFunction, references]);
+}
+
+function useThrottleHandler<T extends AnyCallable>(
+  references: DelayedReferences<T>,
+  config: DelayedCallbackConfig,
+  invokeFunction: () => void
+): (now: number) => void {
+  return useCallback(
+    (now: number): void => {
+      const timeSinceLastRun = now - references.lastInvokeTimeReference.current;
+
+      if (timeSinceLastRun >= config.delay) {
+        if (config.leading) {
+          invokeFunction();
+        } else if (config.trailing) {
+          references.timeoutReference.current = setTimeout(() => {
+            if (references.pendingArgumentsReference.current) {
+              invokeFunction();
+            }
+            references.timeoutReference.current = null;
+          }, config.delay);
+        }
+        return;
+      }
+
+      if (config.trailing) {
+        if (references.timeoutReference.current) {
+          clearTimeout(references.timeoutReference.current);
+        }
+
+        const remainingDelay = config.delay - timeSinceLastRun;
+        references.timeoutReference.current = setTimeout(() => {
+          if (references.pendingArgumentsReference.current) {
+            invokeFunction();
+          }
+          references.timeoutReference.current = null;
+        }, remainingDelay);
+      }
+    },
+    [config.delay, config.leading, config.trailing, invokeFunction, references]
+  );
+}
+
+function useDelayedCallback<T extends AnyCallable>(
+  references: DelayedReferences<T>,
+  config: DelayedCallbackConfig,
+  handleDebounce: () => void,
+  handleThrottle: (now: number) => void
+): (...args: Parameters<T>) => void {
+  return useCallback(
+    (...args: Parameters<T>): void => {
+      const now = Date.now();
+      references.pendingArgumentsReference.current = args;
+      references.lastCallTimeReference.current = now;
+
+      if (config.mode === 'debounce') {
+        handleDebounce();
+      } else {
+        handleThrottle(now);
+      }
+    },
+    [config.mode, handleDebounce, handleThrottle, references]
+  );
+}
+
+function useCleanup(cancel: () => void): void {
+  useEffect(() => {
+    return () => {
+      cancel();
+    };
+  }, [cancel]);
+}
 
 /**
  * Create a delayed callback (debounced or throttled)
@@ -16,171 +222,23 @@ import type { AnyCallable, DelayedCallbackConfig, DelayedFunction } from './type
  * @param config - Delay configuration (mode, delay, leading, trailing, maxWait)
  * @returns Enhanced callback with cancel, flush, and isPending methods
  */
-export function createDelayedCallback<T extends AnyCallable>(
+function useDelayedCallbackFactory<T extends AnyCallable>(
   callback: T,
   config: DelayedCallbackConfig
 ): DelayedFunction<T> {
-  const timeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const maxWaitTimeoutReference = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const callbackReference = useRef(callback);
-  const lastCallTimeReference = useRef<number>(0);
-  const lastInvokeTimeReference = useRef<number>(0);
-  const pendingArgumentsReference = useRef<unknown[] | null>(null);
+  const references = useDelayedReferences(callback);
 
-  // Update callback reference whenever it changes
-  useEffect(() => {
-    callbackReference.current = callback;
-  }, [callback]);
+  const invokeFunction = useInvoke(references);
+  const cancel = useCancel(references);
+  const flush = useFlush(references, config);
+  const isPending = useIsPending(references);
 
-  const invokeFunction = useCallback(() => {
-    const args = pendingArgumentsReference.current;
-    if (args) {
-      callbackReference.current(...args);
-      lastInvokeTimeReference.current = Date.now();
-      pendingArgumentsReference.current = null;
-    }
-  }, []);
+  const handleDebounce = useDebounceHandler(references, config, invokeFunction);
+  const handleThrottle = useThrottleHandler(references, config, invokeFunction);
+  const delayedCallback = useDelayedCallback(references, config, handleDebounce, handleThrottle);
 
-  const cancel = useCallback(() => {
-    if (timeoutReference.current) {
-      clearTimeout(timeoutReference.current);
-      timeoutReference.current = null;
-    }
-    if (maxWaitTimeoutReference.current) {
-      clearTimeout(maxWaitTimeoutReference.current);
-      maxWaitTimeoutReference.current = null;
-    }
-    pendingArgumentsReference.current = null;
-    lastCallTimeReference.current = 0;
-  }, []);
+  useCleanup(cancel);
 
-  const flush = useCallback(() => {
-    const args = pendingArgumentsReference.current;
-    if (!args) {
-      return;
-    }
-
-    const shouldSkipInvoke = config.mode === 'debounce' && config.leading;
-
-    if (timeoutReference.current) {
-      clearTimeout(timeoutReference.current);
-      timeoutReference.current = null;
-    }
-    if (maxWaitTimeoutReference.current) {
-      clearTimeout(maxWaitTimeoutReference.current);
-      maxWaitTimeoutReference.current = null;
-    }
-
-    pendingArgumentsReference.current = null;
-    lastCallTimeReference.current = 0;
-
-    if (shouldSkipInvoke) {
-      return;
-    }
-
-    callbackReference.current(...args);
-    lastInvokeTimeReference.current = Date.now();
-  }, [config.mode, config.leading]);
-
-  const isPending = useCallback(() => {
-    return pendingArgumentsReference.current !== null;
-  }, []);
-
-  const handleDebounce = useCallback(() => {
-    const isLeadingInvoke = config.leading && !timeoutReference.current;
-
-    // Clear existing timeout to reset the delay
-    if (timeoutReference.current) {
-      clearTimeout(timeoutReference.current);
-    }
-
-    // Invoke immediately if leading edge is enabled and no timeout exists
-    if (isLeadingInvoke) {
-      invokeFunction();
-      pendingArgumentsReference.current = null;
-    }
-
-    // Set timeout for trailing edge invocation
-    timeoutReference.current = setTimeout(() => {
-      timeoutReference.current = null;
-      // Only invoke on trailing if not already invoked on leading
-      if (!config.leading || pendingArgumentsReference.current) {
-        invokeFunction();
-      }
-    }, config.delay);
-
-    // Set maxWait timeout if specified
-    const shouldSetMaxWait =
-      config.maxWait && config.maxWait < Infinity && !maxWaitTimeoutReference.current;
-    if (shouldSetMaxWait) {
-      maxWaitTimeoutReference.current = setTimeout(() => {
-        maxWaitTimeoutReference.current = null;
-        invokeFunction();
-      }, config.maxWait);
-    }
-  }, [config.leading, config.delay, config.maxWait, invokeFunction]);
-
-  const handleThrottle = useCallback(
-    (now: number) => {
-      const timeSinceLastRun = now - lastInvokeTimeReference.current;
-
-      // If enough time has passed, invoke immediately
-      if (timeSinceLastRun >= config.delay) {
-        if (config.leading) {
-          invokeFunction();
-        } else if (config.trailing) {
-          // Schedule for later
-          timeoutReference.current = setTimeout(() => {
-            if (pendingArgumentsReference.current) {
-              invokeFunction();
-            }
-            timeoutReference.current = null;
-          }, config.delay);
-        }
-        return;
-      }
-
-      // Schedule for trailing edge
-      if (config.trailing) {
-        if (timeoutReference.current) {
-          clearTimeout(timeoutReference.current);
-        }
-
-        const remainingDelay = config.delay - timeSinceLastRun;
-        timeoutReference.current = setTimeout(() => {
-          if (pendingArgumentsReference.current) {
-            invokeFunction();
-          }
-          timeoutReference.current = null;
-        }, remainingDelay);
-      }
-    },
-    [config.delay, config.leading, config.trailing, invokeFunction]
-  );
-
-  const delayedCallback = useCallback(
-    (...args: unknown[]) => {
-      const now = Date.now();
-      pendingArgumentsReference.current = args;
-      lastCallTimeReference.current = now;
-
-      if (config.mode === 'debounce') {
-        handleDebounce();
-      } else {
-        handleThrottle(now);
-      }
-    },
-    [config.mode, handleDebounce, handleThrottle]
-  );
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      cancel();
-    };
-  }, [cancel]);
-
-  // Cast the callback as a DelayedFunction with the additional methods
   const enhancedCallback = delayedCallback as DelayedFunction<T>;
   enhancedCallback.cancel = cancel;
   enhancedCallback.flush = flush;
@@ -188,3 +246,5 @@ export function createDelayedCallback<T extends AnyCallable>(
 
   return enhancedCallback;
 }
+
+export const createDelayedCallback = useDelayedCallbackFactory;

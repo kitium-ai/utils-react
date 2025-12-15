@@ -25,6 +25,7 @@ export type UseIntersectionObserverOptions = {
 export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
   options: UseIntersectionObserverOptions = {}
 ): [RefObject<T>, boolean] {
+  const { freezeOnceVisible, threshold, root, rootMargin } = options;
   const [isIntersecting, setIsIntersecting] = useState(false);
   const reference = useRef<T>(null);
   const [element, setElement] = useState<T | null>(null);
@@ -35,15 +36,27 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
   }
 
   useEffect(() => {
+    const observerOptions: IntersectionObserverInit = {};
+
+    if (threshold !== undefined) {
+      observerOptions.threshold = threshold;
+    }
+    if (root !== undefined) {
+      observerOptions.root = root;
+    }
+    if (rootMargin !== undefined) {
+      observerOptions.rootMargin = rootMargin;
+    }
+
     const observer = new IntersectionObserver(([entry]) => {
       if (entry) {
         setIsIntersecting(entry.isIntersecting);
 
-        if (options.freezeOnceVisible && entry.isIntersecting) {
+        if (freezeOnceVisible && entry.isIntersecting) {
           observer.disconnect();
         }
       }
-    }, options);
+    }, observerOptions);
 
     if (element) {
       observer.observe(element);
@@ -52,7 +65,7 @@ export function useIntersectionObserver<T extends HTMLElement = HTMLElement>(
     return () => {
       observer.disconnect();
     };
-  }, [element, options.threshold, options.root, options.rootMargin, options.freezeOnceVisible]);
+  }, [element, threshold, root, rootMargin, freezeOnceVisible]);
 
   return [reference, isIntersecting];
 }

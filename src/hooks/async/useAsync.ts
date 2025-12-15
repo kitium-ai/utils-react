@@ -72,7 +72,7 @@ export function useAsync<T>(
     return () => {
       isCancelled = true;
     };
-  }, deps);
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps -- `deps` is caller-controlled for this hook.
 
   return state;
 }

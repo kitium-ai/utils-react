@@ -1,8 +1,20 @@
 /* eslint-disable import/no-default-export */
-import { library } from '@kitiumai/lint';
+import { react_spa } from '@kitiumai/lint';
+import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
-  ...library.flat(),
+  ...react_spa.flat(),
+  {
+    name: 'utils-react/react-hooks-for-ts',
+    files: ['src/**/*.{ts,tsx}'],
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    },
+  },
   {
     name: 'utils-react/eslint9-rule-compat',
     rules: {

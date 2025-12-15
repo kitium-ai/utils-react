@@ -64,16 +64,17 @@ bumped patch versions from kitiumai packages
 
 ## [1.0.0] - 2024-12-19
 
-
 ### Added
 
 #### Testing Infrastructure
+
 - Added Vitest configuration with React Testing Library support
 - Created test setup file with jest-dom matchers
 - Added test coverage configuration with thresholds (90% lines, functions, statements; 85% branches)
 - Added comprehensive test suite for all hook categories
 
 #### State Management Hooks
+
 - `useBoolean` - Manage boolean state with setTrue, setFalse, and toggle helpers
 - `useCounter` - Counter hook with increment, decrement, reset, and min/max/step options
 - `useSetState` - Object state management with partial updates (similar to class component setState)
@@ -82,6 +83,7 @@ bumped patch versions from kitiumai packages
 - `useDefault` - Returns value or default if value is null/undefined
 
 #### Lifecycle Hooks
+
 - `useMount` - Execute function on component mount
 - `useUnmount` - Execute function on component unmount
 - `useUpdateEffect` - useEffect that skips the first render
@@ -92,6 +94,7 @@ bumped patch versions from kitiumai packages
 - `useIsomorphicLayoutEffect` - SSR-safe version of useLayoutEffect
 
 #### Browser API Hooks
+
 - `useSessionStorage` - Sync state with sessionStorage (with cross-tab support)
 - `useMediaQuery` - Track media query matches
 - `useWindowSize` - Track window dimensions
@@ -103,6 +106,7 @@ bumped patch versions from kitiumai packages
 - `useIntersectionObserver` - Track element intersection with viewport
 
 #### Event Hooks
+
 - `useClickOutside` - Detect clicks outside an element
 - `useHover` - Track hover state of an element
 - `useKeyboard` - Handle keyboard events with configurable target and event type
@@ -110,24 +114,29 @@ bumped patch versions from kitiumai packages
 - `useMouse` - Track mouse position
 
 #### Async Hooks
+
 - `useAsync` - Execute async function and track loading/error/value state
 - `useInterval` - Run callback at specified interval (can be paused with null delay)
 - `useTimeout` - Run callback after specified delay (can be cancelled with null delay)
 
 #### Performance Hooks
+
 - `useThrottle` - Throttle value changes
 - `useThrottleCallback` - Throttle callback function calls
 
 #### Form Hooks
+
 - `useInput` - Manage input state with onChange handler and reset
 - `useCheckbox` - Manage checkbox state with onChange handler and toggle
 
 #### Utility Hooks
+
 - `useTitle` - Set document title (restores on unmount)
 - `useScript` - Dynamically load scripts with loading/error/ready state
 - `useLockBodyScroll` - Lock body scroll (useful for modals)
 
 #### UI Hooks
+
 - `useModal` - Manage modal open/close state with open, close, and toggle helpers
 
 ### Changed
@@ -185,4 +194,3 @@ bumped patch versions from kitiumai packages
 ## Previous Versions
 
 This is the initial major release (1.0.0) of the comprehensive React hooks library. Previous versions were pre-release or development versions.
-

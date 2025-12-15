@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 
-// eslint-disable-next-line no-restricted-imports -- Internal package utility
 import { logHookWarning } from '../../utils/errorLogging.js';
 
 type UseClipboardActions = {

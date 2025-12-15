@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { isDOMAvailable } from '../../utils/ssr';
+import { isDOMAvailable } from '../../utils/ssr.js';
 
 /**
  * Hook that sets the document title

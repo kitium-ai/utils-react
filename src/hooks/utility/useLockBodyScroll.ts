@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { isBrowser, isDOMAvailable } from '../../utils/ssr';
+import { isBrowser, isDOMAvailable } from '../../utils/ssr.js';
 
 /**
  * Hook that locks body scroll

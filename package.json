@@ -137,7 +137,14 @@
     "typescript",
     "usehooks",
     "react-hooks",
-    "custom-hooks"
+    "custom-hooks",
+    "kitiumai",
+    "kitium",
+    "react-utils",
+    "react-hooks",
+    "react-utilities",
+    "react-custom-hooks",
+    "react-hooks-utilities"
   ],
   "author": "KitiumAI",
   "repository": {

@@ -25,5 +25,5 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList): 
       return;
     }
     return effect();
-  }, deps);
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps -- `deps` is caller-controlled for this hook.
 }

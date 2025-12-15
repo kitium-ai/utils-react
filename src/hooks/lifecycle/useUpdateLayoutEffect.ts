@@ -25,5 +25,5 @@ export function useUpdateLayoutEffect(effect: EffectCallback, deps?: DependencyL
       return;
     }
     return effect();
-  }, deps);
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps -- `deps` is caller-controlled for this hook.
 }

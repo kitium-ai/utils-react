@@ -5,9 +5,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-// eslint-disable-next-line no-restricted-imports -- Internal package utility
 import { logHookWarning } from '../../../utils/errorLogging.js';
-// eslint-disable-next-line no-restricted-imports -- Internal package utility
 import { isBrowser } from '../../../utils/ssr.js';
 import type { SetStorageValue, StorageConfig, StorageHookResult } from './types.js';
 
@@ -27,8 +25,8 @@ import type { SetStorageValue, StorageConfig, StorageHookResult } from './types.
  * const [value, setValue] = useLocalStorage('key', 'default');
  * ```
  */
-// eslint-disable-next-line max-lines-per-function -- Factory function requires complex logic
-export function createStorageHook<T>(config: StorageConfig, initialValue: T): StorageHookResult<T> {
+// eslint-disable-next-line max-lines-per-function -- Storage hook includes parsing, persistence, and cross-tab sync.
+function useStorageHook<T>(config: StorageConfig, initialValue: T): StorageHookResult<T> {
   const { type, key } = config;
 
   // Get initial value from storage or use initialValue
@@ -100,3 +98,5 @@ export function createStorageHook<T>(config: StorageConfig, initialValue: T): St
 
   return [storedValue, setValue];
 }
+
+export const createStorageHook = useStorageHook;

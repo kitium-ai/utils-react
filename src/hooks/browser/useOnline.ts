@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-// eslint-disable-next-line no-restricted-imports -- Internal package utility
 import { isBrowser } from '../../utils/ssr.js';
 
 /**

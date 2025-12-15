@@ -18,5 +18,5 @@ import { useEffect } from 'react';
 export function useMount(function_: () => void): void {
   useEffect(() => {
     function_();
-  }, []);
+  }, [function_]);
 }

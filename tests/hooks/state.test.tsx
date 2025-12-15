@@ -112,9 +112,7 @@ describe('state hooks', () => {
 
   describe('useSetState', () => {
     it('should merge state updates', () => {
-      const { result } = renderHook(() =>
-        useSetState({ name: 'John', age: 30 })
-      );
+      const { result } = renderHook(() => useSetState({ name: 'John', age: 30 }));
       act(() => {
         result.current[1]({ age: 31 });
       });
@@ -205,28 +203,24 @@ describe('state hooks', () => {
 
   describe('useDefault', () => {
     it('should return value if not null/undefined', () => {
-      const { result } = renderHook(
-        ({ value }) => useDefault(value, 'default'),
-        { initialProps: { value: 'value' } }
-      );
+      const { result } = renderHook(({ value }) => useDefault(value, 'default'), {
+        initialProps: { value: 'value' },
+      });
       expect(result.current).toBe('value');
     });
 
     it('should return default if value is null', () => {
-      const { result } = renderHook(
-        ({ value }) => useDefault(value, 'default'),
-        { initialProps: { value: null } }
-      );
+      const { result } = renderHook(({ value }) => useDefault(value, 'default'), {
+        initialProps: { value: null },
+      });
       expect(result.current).toBe('default');
     });
 
     it('should return default if value is undefined', () => {
-      const { result } = renderHook(
-        ({ value }) => useDefault(value, 'default'),
-        { initialProps: { value: undefined } }
-      );
+      const { result } = renderHook(({ value }) => useDefault(value, 'default'), {
+        initialProps: { value: undefined },
+      });
       expect(result.current).toBe('default');
     });
   });
 });
-
