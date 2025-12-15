@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 /**
  * Window size dimensions
  */
-export interface WindowSize {
+export type WindowSize = {
   width: number;
   height: number;
-}
+};
 
 /**
  * Hook that tracks window size
@@ -37,7 +37,7 @@ export function useWindowSize(): WindowSize {
       return;
     }
 
-    const handler = () => {
+    const handler = (): void => {
       setSize({
         width: window.innerWidth,
         height: window.innerHeight,

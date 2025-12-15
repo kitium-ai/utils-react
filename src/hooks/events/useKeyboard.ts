@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 /**
  * Options for useKeyboard hook
  */
-export interface UseKeyboardOptions {
+export type UseKeyboardOptions = {
   target?: 'window' | 'document' | HTMLElement;
   event?: 'keydown' | 'keyup' | 'keypress';
-}
+};
 
 /**
  * Hook that handles keyboard events
@@ -33,10 +33,18 @@ export function useKeyboard(
   const { target = 'window', event: eventType = 'keydown' } = options;
 
   useEffect(() => {
-    const targetElement = target === 'window' ? window : target === 'document' ? document : target;
+    const targetElement: Window | Document | HTMLElement = (() => {
+      if (target === 'window') {
+        return window;
+      }
+      if (target === 'document') {
+        return document;
+      }
+      return target;
+    })();
 
-    const handleKeyboard = (e: Event) => {
-      handler(e as KeyboardEvent);
+    const handleKeyboard = (event: Event): void => {
+      handler(event as KeyboardEvent);
     };
 
     targetElement.addEventListener(eventType, handleKeyboard);

@@ -1,15 +1,14 @@
-import type { DependencyList } from 'react';
-import { useEffect, useState } from 'react';
+import { type DependencyList, useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 /**
  * Async state
  */
-export interface AsyncState<T> {
+export type AsyncState<T> = {
   loading: boolean;
   error: Error | null;
   value: T | null;
-}
+};
 
 /**
  * Hook that executes an async function and tracks its state
@@ -44,34 +43,41 @@ export function useAsync<T>(
   });
 
   useEffect(() => {
-    let cancelled = false;
+    let isCancelled = false;
 
     flushSync(() => {
       setState({ loading: true, error: null, value: null });
     });
 
-    asyncFunction()
-      .then((value) => {
-        if (!cancelled) {
-          flushSync(() => {
-            setState({ loading: false, error: null, value });
-          });
+    const run = async (): Promise<void> => {
+      try {
+        const value = await asyncFunction();
+        if (isCancelled) {
+          return;
         }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          flushSync(() => {
-            setState({
-              loading: false,
-              error: error instanceof Error ? error : new Error(String(error)),
-              value: null,
-            });
-          });
+
+        flushSync(() => {
+          setState({ loading: false, error: null, value });
+        });
+      } catch (error) {
+        if (isCancelled) {
+          return;
         }
-      });
+
+        flushSync(() => {
+          setState({
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+            value: null,
+          });
+        });
+      }
+    };
+
+    void run();
 
     return () => {
-      cancelled = true;
+      isCancelled = true;
     };
   }, deps);
 

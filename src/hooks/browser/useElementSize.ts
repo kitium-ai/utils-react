@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import type { RefObject } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 
 /**
  * Element size dimensions
  */
-export interface ElementSize {
+export type ElementSize = {
   width: number;
   height: number;
-}
+};
 
 /**
  * Hook that tracks the size of an element

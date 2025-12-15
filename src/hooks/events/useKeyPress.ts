@@ -25,7 +25,7 @@ export function useKeyPress(
   const { event: eventType = 'keydown' } = options;
 
   useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
+    const handleKeyPress = (event: KeyboardEvent): void => {
       if (event.key === targetKey) {
         handler(event);
       }

@@ -34,7 +34,7 @@ export function useSessionStorage<T>(key: string, initialValue: T): [T, SetValue
   });
 
   const setValue: SetValue<T> = useCallback(
-    (value) => {
+    (value): void => {
       try {
         const valueToStore = value instanceof Function ? value(storedValue) : value;
 
@@ -51,10 +51,10 @@ export function useSessionStorage<T>(key: string, initialValue: T): [T, SetValue
   );
 
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === key && e.newValue && e.storageArea === sessionStorage) {
+    const handleStorageChange = (event: StorageEvent): void => {
+      if (event.key === key && event.newValue && event.storageArea === sessionStorage) {
         try {
-          setStoredValue(JSON.parse(e.newValue));
+          setStoredValue(JSON.parse(event.newValue));
         } catch (error) {
           console.warn(`Error parsing storage event for key "${key}":`, error);
         }

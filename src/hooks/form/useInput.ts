@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from 'react';
+import { type ChangeEvent, useCallback, useState } from 'react';
 
 /**
  * Hook for managing input state
@@ -18,13 +18,13 @@ export function useInput(
   initialValue = ''
 ): [
   string,
-  (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
+  (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
   { setValue: (value: string) => void; reset: () => void },
 ] {
   const [value, setValue] = useState(initialValue);
 
-  const onChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setValue(e.target.value);
+  const onChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setValue(event.target.value);
   }, []);
 
   const reset = useCallback(() => {

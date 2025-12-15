@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
  * ```
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() => {
+  const [isMatching, setIsMatching] = useState(() => {
     if (typeof window === 'undefined') {
       return false;
     }
@@ -28,8 +28,8 @@ export function useMediaQuery(query: string): boolean {
     }
 
     const media = window.matchMedia(query);
-    const handler = (event: MediaQueryListEvent) => {
-      setMatches(event.matches);
+    const handler = (event: MediaQueryListEvent): void => {
+      setIsMatching(event.matches);
     };
 
     // Modern browsers
@@ -43,5 +43,5 @@ export function useMediaQuery(query: string): boolean {
     return () => media.removeListener(handler);
   }, [query]);
 
-  return matches;
+  return isMatching;
 }

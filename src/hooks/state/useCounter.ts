@@ -3,11 +3,11 @@ import { useCallback, useState } from 'react';
 /**
  * Options for useCounter hook
  */
-export interface UseCounterOptions {
+export type UseCounterOptions = {
   min?: number;
   max?: number;
   step?: number;
-}
+};
 
 /**
  * Hook for managing counter state with increment/decrement

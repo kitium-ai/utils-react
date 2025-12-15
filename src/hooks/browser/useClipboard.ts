@@ -1,5 +1,12 @@
 import { useCallback, useState } from 'react';
 
+type UseClipboardActions = {
+  copy: (text: string) => Promise<boolean>;
+  reset: () => void;
+};
+
+type UseClipboardReturn = readonly [string, UseClipboardActions];
+
 /**
  * Hook for clipboard operations
  *
@@ -14,12 +21,12 @@ import { useCallback, useState } from 'react';
  * };
  * ```
  */
-export function useClipboard(initialValue = '') {
+export function useClipboard(initialValue = ''): UseClipboardReturn {
   const [value, setValue] = useState(initialValue);
 
-  const copy = useCallback(async (text: string) => {
+  const copy = useCallback(async (text: string): Promise<boolean> => {
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
         setValue(text);
         return true;
@@ -32,19 +39,19 @@ export function useClipboard(initialValue = '') {
       textArea.style.opacity = '0';
       document.body.appendChild(textArea);
       textArea.select();
-      const success = document.execCommand('copy');
+      const isSuccess = document.execCommand('copy');
       document.body.removeChild(textArea);
-      if (success) {
+      if (isSuccess) {
         setValue(text);
       }
-      return success;
+      return isSuccess;
     } catch (error) {
       console.warn('Failed to copy to clipboard:', error);
       return false;
     }
   }, []);
 
-  const reset = useCallback(() => {
+  const reset = useCallback((): void => {
     setValue('');
   }, []);
 

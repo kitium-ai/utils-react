@@ -1,12 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import type { RefObject } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 
 /**
  * Options for IntersectionObserver
  */
-export interface UseIntersectionObserverOptions extends IntersectionObserverInit {
+export type UseIntersectionObserverOptions = {
   freezeOnceVisible?: boolean;
-}
+} & IntersectionObserverInit;
 
 /**
  * Hook that tracks element intersection with viewport

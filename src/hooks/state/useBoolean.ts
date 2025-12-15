@@ -1,5 +1,13 @@
 import { useCallback, useState } from 'react';
 
+type UseBooleanActions = {
+  setTrue: () => void;
+  setFalse: () => void;
+  toggle: () => void;
+};
+
+type UseBooleanReturn = readonly [boolean, UseBooleanActions];
+
 /**
  * Hook for managing boolean state with helper functions
  *
@@ -21,12 +29,12 @@ import { useCallback, useState } from 'react';
  * };
  * ```
  */
-export function useBoolean(initialValue = false) {
-  const [value, setValue] = useState(initialValue);
+export function useBoolean(initialValue = false): UseBooleanReturn {
+  const [isEnabled, setIsEnabled] = useState(initialValue);
 
-  const setTrue = useCallback(() => setValue(true), []);
-  const setFalse = useCallback(() => setValue(false), []);
-  const toggle = useCallback(() => setValue((v) => !v), []);
+  const setTrue = useCallback((): void => setIsEnabled(true), []);
+  const setFalse = useCallback((): void => setIsEnabled(false), []);
+  const toggle = useCallback((): void => setIsEnabled((enabled) => !enabled), []);
 
-  return [value, { setTrue, setFalse, toggle }] as const;
+  return [isEnabled, { setTrue, setFalse, toggle }] as const;
 }

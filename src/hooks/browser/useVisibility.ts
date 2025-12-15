@@ -26,7 +26,7 @@ export function useVisibility(): boolean {
       return;
     }
 
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = (): void => {
       setIsVisible(!document.hidden);
     };
 

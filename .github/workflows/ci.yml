@@ -2,66 +2,26 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, master]
   pull_request:
-    branches: [main, develop]
+
+permissions:
+  contents: read
 
 jobs:
-  lint:
-    name: Lint
+  verify:
     runs-on: ubuntu-latest
+    container:
+      image: docker.io/ashishyd/kitiumai-dev:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Shared setup (build, lint, test, typecheck)
+        uses: ./.github/actions/kitium-shared-setup
         with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci --legacy-peer-deps
-      - run: npm run lint
-
-  typecheck:
-    name: Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci --legacy-peer-deps
-      - run: npm run typecheck
-
-  test:
-    name: Test (Coverage)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci --legacy-peer-deps
-      - run: npm test -- --coverage
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci --legacy-peer-deps
-      - run: npm run build
-      - name: Check bundle size
-        run: |
-          echo "📦 Bundle Size Report"
-          du -sh dist/
-          find dist/ -name "*.js" -exec du -h {} \; | sort -rh
+          run-build: "true"
+          run-lint: "true"
+          lint-command: pnpm run lint
+          run-tests: "true"
+          test-command: pnpm run test
+          run-typecheck: "true"
+          typecheck-command: pnpm run typecheck

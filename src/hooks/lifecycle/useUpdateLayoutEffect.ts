@@ -1,5 +1,4 @@
-import type { DependencyList, EffectCallback } from 'react';
-import { useLayoutEffect, useRef } from 'react';
+import { type DependencyList, type EffectCallback, useLayoutEffect, useRef } from 'react';
 
 /**
  * Hook that runs a layout effect but skips the first render

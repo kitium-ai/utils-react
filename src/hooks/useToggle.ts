@@ -20,9 +20,9 @@ import { useCallback, useState } from 'react';
  * ```
  */
 export function useToggle(initialValue = false): [boolean, () => void, (value: boolean) => void] {
-  const [value, setValue] = useState(initialValue);
+  const [isEnabled, setIsEnabled] = useState(initialValue);
 
-  const toggle = useCallback(() => setValue((v) => !v), []);
+  const toggle = useCallback((): void => setIsEnabled((enabled) => !enabled), []);
 
-  return [value, toggle, setValue];
+  return [isEnabled, toggle, setIsEnabled];
 }

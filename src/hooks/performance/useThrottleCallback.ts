@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-export interface ThrottleOptions {
+type AnyFunction = (...args: unknown[]) => unknown;
+
+export type ThrottleOptions = {
   /**
    * Delay in milliseconds (default: 500)
    */
@@ -13,9 +15,9 @@ export interface ThrottleOptions {
    * Invoke the callback on the trailing edge (default: true)
    */
   trailing?: boolean;
-}
+};
 
-export interface ThrottledFunction<T extends (...args: unknown[]) => unknown> {
+export type ThrottledFunction<T extends (...args: unknown[]) => unknown> = {
   /**
    * The throttled function
    */
@@ -32,7 +34,7 @@ export interface ThrottledFunction<T extends (...args: unknown[]) => unknown> {
    * Check if there is a pending invocation
    */
   isPending: () => boolean;
-}
+};
 
 /**
  * Hook that throttles a callback function with advanced options
@@ -65,7 +67,7 @@ export interface ThrottledFunction<T extends (...args: unknown[]) => unknown> {
  * - Cancel and flush methods for manual control
  * - Backwards compatible with simple delay parameter
  */
-export function useThrottleCallback<T extends (...args: unknown[]) => unknown>(
+export function useThrottleCallback<T extends AnyFunction>(
   callback: T,
   options: ThrottleOptions | number = 500
 ): ThrottledFunction<T> {

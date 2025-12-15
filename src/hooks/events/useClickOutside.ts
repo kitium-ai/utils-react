@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react';
-import type { RefObject } from 'react';
+import { type RefObject, useEffect, useRef } from 'react';
 
 /**
  * Hook that detects clicks outside an element
@@ -28,7 +27,7 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
   const reference = useRef<T>(null);
 
   useEffect(() => {
-    const handleClick = (event: MouseEvent | TouchEvent) => {
+    const handleClick = (event: MouseEvent | TouchEvent): void => {
       if (reference.current && !reference.current.contains(event.target as Node)) {
         handler();
       }

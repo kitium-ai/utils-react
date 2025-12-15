@@ -1,5 +1,17 @@
 import { useCallback, useState } from 'react';
 
+type UseListActions<T> = {
+  set: (newList: T[] | ((previous: T[]) => T[])) => void;
+  push: (item: T) => void;
+  removeAt: (index: number) => void;
+  insertAt: (index: number, item: T) => void;
+  updateAt: (index: number, item: T) => void;
+  clear: () => void;
+  reset: () => void;
+};
+
+type UseListReturn<T> = readonly [T[], UseListActions<T>];
+
 /**
  * Hook for managing array state with helper methods
  *
@@ -26,34 +38,34 @@ import { useCallback, useState } from 'react';
  * };
  * ```
  */
-export function useList<T>(initialList: T[] = []) {
+export function useList<T>(initialList: T[] = []): UseListReturn<T> {
   const [list, setList] = useState<T[]>(initialList);
 
-  const set = useCallback((newList: T[] | ((previous: T[]) => T[])) => {
+  const set = useCallback((newList: T[] | ((previous: T[]) => T[])): void => {
     setList(newList);
   }, []);
 
-  const push = useCallback((item: T) => {
+  const push = useCallback((item: T): void => {
     setList((previous) => [...previous, item]);
   }, []);
 
-  const removeAt = useCallback((index: number) => {
+  const removeAt = useCallback((index: number): void => {
     setList((previous) => previous.filter((_, index_) => index_ !== index));
   }, []);
 
-  const insertAt = useCallback((index: number, item: T) => {
+  const insertAt = useCallback((index: number, item: T): void => {
     setList((previous) => [...previous.slice(0, index), item, ...previous.slice(index)]);
   }, []);
 
-  const updateAt = useCallback((index: number, item: T) => {
+  const updateAt = useCallback((index: number, item: T): void => {
     setList((previous) => previous.map((element, index_) => (index_ === index ? item : element)));
   }, []);
 
-  const clear = useCallback(() => {
+  const clear = useCallback((): void => {
     setList([]);
   }, []);
 
-  const reset = useCallback(() => {
+  const reset = useCallback((): void => {
     setList(initialList);
   }, [initialList]);
 

@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import type { RefObject } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 
 /**
  * Hook that tracks hover state
@@ -29,13 +28,13 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [RefObject<T>, 
     setElement(reference.current);
   }
 
-  const handlersRef = useRef({
+  const handlersReference = useRef({
     handleMouseEnter: () => setIsHovered(true),
     handleMouseLeave: () => setIsHovered(false),
   });
 
   // Update handlers on each render to capture current setState
-  handlersRef.current = {
+  handlersReference.current = {
     handleMouseEnter: () => setIsHovered(true),
     handleMouseLeave: () => setIsHovered(false),
   };
@@ -45,7 +44,7 @@ export function useHover<T extends HTMLElement = HTMLElement>(): [RefObject<T>, 
       return;
     }
 
-    const { handleMouseEnter, handleMouseLeave } = handlersRef.current;
+    const { handleMouseEnter, handleMouseLeave } = handlersReference.current;
 
     element.addEventListener('mouseenter', handleMouseEnter);
     element.addEventListener('mouseleave', handleMouseLeave);

@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 /**
  * Script loading state
  */
-export interface ScriptState {
+export type ScriptState = {
   loading: boolean;
   error: Error | null;
   ready: boolean;
-}
+};
 
 /**
  * Hook that loads a script dynamically
@@ -46,11 +46,11 @@ export function useScript(
     script.async = options.async ?? true;
     script.defer = options.defer ?? false;
 
-    const handleLoad = () => {
+    const handleLoad = (): void => {
       setState({ loading: false, error: null, ready: true });
     };
 
-    const handleError = () => {
+    const handleError = (): void => {
       setState({
         loading: false,
         error: new Error(`Failed to load script: ${source}`),

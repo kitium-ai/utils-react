@@ -1,5 +1,13 @@
 import { useCallback, useState } from 'react';
 
+type UseModalActions = {
+  open: () => void;
+  close: () => void;
+  toggle: () => void;
+};
+
+type UseModalReturn = readonly [boolean, UseModalActions];
+
 /**
  * Hook for managing modal state
  *
@@ -24,12 +32,12 @@ import { useCallback, useState } from 'react';
  * };
  * ```
  */
-export function useModal(initialOpen = false) {
+export function useModal(initialOpen = false): UseModalReturn {
   const [isOpen, setIsOpen] = useState(initialOpen);
 
-  const open = useCallback(() => setIsOpen(true), []);
-  const close = useCallback(() => setIsOpen(false), []);
-  const toggle = useCallback(() => setIsOpen((v) => !v), []);
+  const open = useCallback((): void => setIsOpen(true), []);
+  const close = useCallback((): void => setIsOpen(false), []);
+  const toggle = useCallback((): void => setIsOpen((open_) => !open_), []);
 
   return [isOpen, { open, close, toggle }] as const;
 }

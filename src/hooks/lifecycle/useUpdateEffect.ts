@@ -1,5 +1,4 @@
-import type { DependencyList, EffectCallback } from 'react';
-import { useEffect, useRef } from 'react';
+import { type DependencyList, type EffectCallback, useEffect, useRef } from 'react';
 
 /**
  * Hook that runs an effect but skips the first render

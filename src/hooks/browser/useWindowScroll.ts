@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 /**
  * Scroll position
  */
-export interface ScrollPosition {
+export type ScrollPosition = {
   x: number;
   y: number;
-}
+};
 
 /**
  * Hook that tracks window scroll position
@@ -37,7 +37,7 @@ export function useWindowScroll(): ScrollPosition {
       return;
     }
 
-    const handler = () => {
+    const handler = (): void => {
       setPosition({
         x: window.scrollX || window.pageXOffset,
         y: window.scrollY || window.pageYOffset,

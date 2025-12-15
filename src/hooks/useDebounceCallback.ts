@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-export interface DebounceOptions {
+type AnyFunction = (...args: unknown[]) => unknown;
+
+export type DebounceOptions = {
   /**
    * Delay in milliseconds (default: 500)
    */
@@ -13,9 +15,9 @@ export interface DebounceOptions {
    * Maximum time the callback can be delayed before being invoked (default: undefined)
    */
   maxWait?: number;
-}
+};
 
-export interface DebouncedFunction<T extends (...args: unknown[]) => unknown> {
+export type DebouncedFunction<T extends (...args: unknown[]) => unknown> = {
   /**
    * The debounced function
    */
@@ -32,7 +34,7 @@ export interface DebouncedFunction<T extends (...args: unknown[]) => unknown> {
    * Check if there is a pending invocation
    */
   isPending: () => boolean;
-}
+};
 
 /**
  * Hook that debounces a callback function with advanced options
@@ -66,7 +68,7 @@ export interface DebouncedFunction<T extends (...args: unknown[]) => unknown> {
  * - Cancel and flush methods for manual control
  * - Backwards compatible with simple delay parameter
  */
-export function useDebounceCallback<T extends (...args: unknown[]) => unknown>(
+export function useDebounceCallback<T extends AnyFunction>(
   callback: T,
   options: DebounceOptions | number = 500
 ): DebouncedFunction<T> {

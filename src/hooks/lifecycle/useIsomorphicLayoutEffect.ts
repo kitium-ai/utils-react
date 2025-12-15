@@ -1,5 +1,4 @@
-import type { DependencyList, EffectCallback } from 'react';
-import { useEffect, useLayoutEffect } from 'react';
+import { type DependencyList, type EffectCallback, useEffect, useLayoutEffect } from 'react';
 
 /**
  * SSR-safe version of useLayoutEffect
